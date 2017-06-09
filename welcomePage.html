@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="leap-0.6.4.js"></script>
+    <style>
+        #startBlock
+        {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            background-color:azure;
+            width:50%;
+            height: 50%;
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            opacity: 0.5;
+            text-align: center;
+        }
+        #title
+        {
+            font-family: "Apple LiGothic";
+            font-size:90px;
+        }
+        .welcomePageButton
+        {
+            vertical-align: middle;
+            border: none;
+            font-family: "Apple LiGothic";
+            font-size: 50px;
+            background-color:#5f9ea0;
+            width: 200px;
+
+        }
+
+    </style>
+    <script src="LeapObjectControls.js"></script>
+
+</head>
+
+<body bgcolor="#5f9ea0">
+<div id="startBlock">
+    <h1 id="title">Leap Runner</h1>
+    <button class="welcomePageButton" onclick="window.location='game.html'">
+        start
+    </button>
+</div>
+</body>
+</html>

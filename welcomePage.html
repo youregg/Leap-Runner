@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script type="text/javascript" src="leap-0.6.4.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+
     <style>
         #startBlock
         {
@@ -22,7 +24,7 @@
             font-family: "Apple LiGothic";
             font-size:90px;
         }
-        .welcomePageButton
+        #startButton
         {
             vertical-align: middle;
             border: none;
@@ -41,7 +43,7 @@
 <body bgcolor="#5f9ea0">
 <div id="startBlock">
     <h1 id="title">Leap Runner</h1>
-    <button class="welcomePageButton" onclick="window.location='game.html'">
+    <button id="startButton" onclick="window.location='game.html'">
         start
     </button>
 </div>

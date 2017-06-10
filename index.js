@@ -4,6 +4,12 @@
 
 var controller = new Leap.Controller();
 
+var  leapjs = require('leap-0.6.4.js'),
+    controller = new leapjs.Controller({
+        enableGestures: true,
+        frameEventName: 'animationFrame'
+    });
+
 function init()
 {
     controller.connect();//connect the application and the leap motion device
@@ -13,7 +19,7 @@ function leapConnected()
 {
     controller.connect();
     if(controller.connection==true)
-        alert("true");
+        console.log("true");
 
 
 }
@@ -21,3 +27,4 @@ function leapConnected()
 function leapNotConnected()
 {
 }
+

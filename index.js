@@ -1,30 +1,75 @@
 /**
  * Created by chrischen on 2017/6/4.
  */
+var score=0;//current score
+var life=5;//player's life left,game end when decreased to 0
 
-var controller = new Leap.Controller();
-
-var  leapjs = require('leap-0.6.4.js'),
-    controller = new leapjs.Controller({
-        enableGestures: true,
-        frameEventName: 'animationFrame'
-    });
+var leapController;
+var listeningToDisconnect = false;
 
 function init()
 {
-    controller.connect();//connect the application and the leap motion device
+    leapController = new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
+
+    if (!leapController.sendingInput)
+    {
+        leapController.sendingInput = true;
+        if (!listeningToDisconnect) {
+            listeningToDisconnect = true;
+
+            leapController.on('deviceDisconnected', leapDisconnected);
+        }
+
+        $('#leapWarning').css('display', 'none');
+    }
+
 }
 
-function leapConnected()
+function leapDisconnected()
 {
-    controller.connect();
-    if(controller.connection==true)
-        console.log("true");
+    if (leapController.sendingInput)
+    {
+        leapController.sendingInput = false;
 
-
+        $('#leapWarning').css('display', 'block');
+    }
 }
 
 function leapNotConnected()
 {
+    leapController.sendingInput = false;
+    $('#leapWarning').css('display', 'block');
 }
+
+
+function startGame()
+{
+
+}
+
+function pauseGame()
+{
+
+}
+
+function resumeGame()
+{
+
+}
+
+function setBGM()
+{
+
+}
+
+
+function deadScene()
+{
+
+}
+
+
+
+
+
 

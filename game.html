@@ -4,13 +4,31 @@
     <script src="three.js"></script>
     <script src="leap-0.6.4.js"></script>
     <script src="index.js"></script>
-    <style type="text/css">
+    <script src="jquery.js"></script>
 
+    <style type="text/css">
+        #infoPanel
+        {
+            font-family: "Apple LiGothic";
+            font-size: 15px;
+            width:120px;
+        }
+        #score
+        {
+
+        }
+        #life
+        {
+
+        }
     </style>
 
 </head>
 
-<body onload="leapConnected()">
-
+<body>
+    <div id="infoPanel">
+        <h1 id="score">score:0</h1>
+        <h1 id="life">life:5</h1>
+    </div>
 </body>
 </html>

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script type="text/javascript" src="leap-0.6.4.js"></script>
-    <script type="text/javascript" src="index.js"></script>
+    <script src="leap-0.6.4.js"></script>
+    <script src="index.js"></script>
+    <script src="jquery.js"></script>
 
     <style>
         #startBlock
@@ -34,18 +35,46 @@
             width: 200px;
 
         }
+        #leapWarning
+        {
+            position: absolute;
+            width: 100%;
+            z-index: 6;
+            top: 37vh;
+            font-size: 10vh;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.92)
+            display:none;
+
+            text-align: center;
+            font-family: "Apple LiGothic";
+            color:darkgray;
+            background-color: inherit;
+
+        }
 
     </style>
-    <script src="LeapObjectControls.js"></script>
 
 </head>
 
-<body bgcolor="#5f9ea0">
+<body bgcolor="#5f9ea0" onload="init()">
+
+<div id="leapWarning">
+        PLEASE CONNECT YOUR<br>LEAP MOTION CONTROLLER
+</div>
+
 <div id="startBlock">
-    <h1 id="title">Leap Runner</h1>
+    <h1 id="title">Flappy Bird</h1>
     <button id="startButton" onclick="window.location='game.html'">
         start
     </button>
 </div>
+<script>
+    setTimeout(function() {
+        if (!leapController.sendingInput) {
+            leapNotConnected();
+        }
+    }, 2000);
+</script>
 </body>
 </html>

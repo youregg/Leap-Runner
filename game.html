@@ -16,8 +16,9 @@
         #infoPanel
         {
             font-family: "Apple LiGothic";
-            font-size: 15px;
+            font-size: 30px;
             width:120px;
+            color:lightgrey;
         }
         #score
         {
@@ -35,12 +36,19 @@
 
 <div id="gameContainer">
     <div id="infoPanel">
-
+        score:0<br/>
+        life:5
     </div>
 </div>
 <script src="src\leap.js"></script>
 <script src="src\three.min.js"></script>
 <script src="src\jquery.js"></script>
 <script src="src\index.js"></script>
+<script>
+    var plane=new plane();
+    plane.mesh.scale.set(.25,.25,.25);
+    plane.mesh.position.y = 100;
+    scene.add(plane.mesh);
+</script>
 </body>
 </html>

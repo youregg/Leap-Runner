@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
     <title></title>
-    <script src="three.js"></script>
-    <script src="leap-0.6.4.js"></script>
+    <script src="leap.js"></script>
     <script src="index.js"></script>
     <script src="jquery.js"></script>
 
     <style type="text/css">
+        #gameContainer
+        {
+            width:100%;
+            height:100%;
+        }
         #infoPanel
         {
             font-family: "Apple LiGothic";
@@ -26,6 +30,10 @@
 </head>
 
 <body>
+<div id="gameContainer">
+    <div id="sky"></div>
+    <div id="ground"></div>
+</div>
     <div id="infoPanel">
         <h1 id="score">score:0</h1>
         <h1 id="life">life:5</h1>

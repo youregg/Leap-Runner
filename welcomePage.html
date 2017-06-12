@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="leap-0.6.4.js"></script>
+    <script src="leap.js"></script>
     <script src="index.js"></script>
     <script src="jquery.js"></script>
 
@@ -43,14 +43,12 @@
             top: 37vh;
             font-size: 10vh;
             overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.92)
+            background-color: rgba(0, 0, 0, 0.92);
             display:none;
-
             text-align: center;
             font-family: "Apple LiGothic";
             color:darkgray;
             background-color: inherit;
-
         }
 
     </style>
@@ -64,17 +62,11 @@
 </div>
 
 <div id="startBlock">
-    <h1 id="title">Flappy Bird</h1>
+    <h1 id="title">Leap Runner</h1>
     <button id="startButton" onclick="window.location='game.html'">
         start
     </button>
 </div>
-<script>
-    setTimeout(function() {
-        if (!leapController.sendingInput) {
-            leapNotConnected();
-        }
-    }, 2000);
-</script>
+
 </body>
 </html>

@@ -3,26 +3,32 @@ var life=5;//player's life left,game end when decreased to 0
 var difficulty=1;//difficult level
 var volume=50;//background music volume
 
-var leapController=new Leap.Controller({
-        enableGestures:true
-    });
+var container=document.getElementById('gameContainer');//get canvas
+container.style.position = 'absolute';
+container.style.top = 0;
+container.style.left = 0;
 
-var scene =new THREE.scene();//create game scene
-var camera=new THREE.PerspectiveCamera();
+var scene =new THREE.Scene();//create game scene
 
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );//initialize a three.js camera
+camera.position.set( 0, 200, 200 );
 
-function init()
-{
-    leapController.connect();
-    if(leapController.connected)
-        $('#leapWarning').css('display','none');
-    else
-    {
-        $('#leapWarning').css('display','block');
-        $('#startButton').css('disabled','disabled');//if not connected, disable the start button
-    }
+var renderer=new THREE.WebGLRenderer({
+    canvas: container
+});//create renderer
+renderer.setSize(window.innerWidth,window.innerHeight);
 
+//init leap motion control
+var leapController=new Leap.Controller();
+leapController.connect();
+
+//render the scene
+function render() {
+    requestAnimationFrame(render);
+    renderer.render( scene, camera );
 }
+render();
+
 
 
 function startGame()

@@ -13,14 +13,11 @@ var scene =new THREE.Scene();//create game scene
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );//initialize a three.js camera
 camera.position.set( 0, 200, 200 );
 
+//create renderer
 var renderer=new THREE.WebGLRenderer({
     canvas: container
-});//create renderer
+});
 renderer.setSize(window.innerWidth,window.innerHeight);
-
-//init leap motion control
-var leapController=new Leap.Controller();
-leapController.connect();
 
 //render the scene
 function render() {
@@ -28,6 +25,12 @@ function render() {
     renderer.render( scene, camera );
 }
 render();
+
+//init leap motion control
+var leapController=new Leap.Controller();
+leapController.connect();
+
+
 
 
 

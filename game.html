@@ -36,19 +36,21 @@
 
 <div id="gameContainer">
     <div id="infoPanel">
-        score:0<br/>
-        life:5
+        <div id="score">
+            score:0
+        </div>
+        <div id="life">
+            life:5
+        </div>
     </div>
+
 </div>
 <script src="src\leap.js"></script>
 <script src="src\three.min.js"></script>
 <script src="src\jquery.js"></script>
 <script src="src\index.js"></script>
 <script>
-    var plane=new plane();
-    plane.mesh.scale.set(.25,.25,.25);
-    plane.mesh.position.y = 100;
-    scene.add(plane.mesh);
+    createPlayer();
 </script>
 </body>
 </html>

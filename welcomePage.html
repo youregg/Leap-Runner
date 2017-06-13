@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="leap.js"></script>
-    <script src="index.js"></script>
-    <script src="jquery.js"></script>
+    <script src="src\jquery.js"></script>
 
     <style>
         #startBlock
@@ -68,5 +66,24 @@
     </button>
 </div>
 
+<canvas id="startScene">
+</canvas>
 </body>
+
+<script src="src\leap.js"></script>
+<script>
+    var startScene = document.getElementById("startScene");
+    var ctx = startScene.getContext("2d");
+
+    Leap.loop({enableGestures: true}, function(frame)
+    {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        frame.gestures.forEach(function(gesture) {
+            if (gesture.type == "circle")
+                self.location = 'game.html';
+        });
+    });
+</script>
+
 </html>
+

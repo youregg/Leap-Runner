@@ -89,9 +89,10 @@ var player=function()
 function createPlayer()
 {
     player = new player();
-    player.mesh.scale.set(.25,.25,.25);
+    player.mesh.scale.set(.50,.50,.50);
     player.mesh.position.y = 100;
     scene.add(player.mesh);
+
 }
 
 //Obstacle model

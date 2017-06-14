@@ -28,12 +28,33 @@ var gameGround;
 var collideMeshList=[];
 
 var container=document.getElementById('gameContainer');//get game container
-var scene;//create game scene
-var camera;//create perspective camera
-var light;//add environmental light
-var renderer;//create game renderer
-var leapController;
-var audio;
+var scene=new THREE.Scene();//create game scene
+
+var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.position.set( 0, 200, 200 );;//create perspective camera
+
+var light= new THREE.AmbientLight(0xffffff);
+light.position.set(0,200,0);//add environmental light
+
+var renderer=new THREE.WebGLRenderer({
+    alpha: true,
+    antialias: true
+});
+renderer.setSize(window.innerWidth,window.innerHeight);
+container.appendChild(renderer.domElement);
+renderer.shadowMapEnabled=true;//add object shadow
+
+scene.add(camera);
+scene.add(light);
+
+var leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
+leapController.connect();
+
+var audio = document.createElement('audio');
+audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
+audio.autoplay='autoplay';
+audio.loop=true;
+document.body.appendChild(audio);
 
 
 // 返回一个介于min和max之间的随机数
@@ -54,39 +75,13 @@ function render() {
     renderer.render( scene, camera );
 }
 
-function init()
+function update()
 {
-    scene=new THREE.Scene();
-    camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    camera.position.set( 0, 200, 200 );
+    var delta = clock.getDelta();
+    var moveDistance = 200 * delta;
+    camera.position.z += moveDistance * 0.6;
 
-    light= new THREE.AmbientLight(0xffffff);
-    light.position.set(0,200,0);
-
-    renderer=new THREE.WebGLRenderer({
-        alpha: true,
-        antialias: true
-    });
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    container.appendChild(renderer.domElement);
-    renderer.shadowMapEnabled=true;//add object shadow
-
-    scene.add(camera);
-    scene.add(light);
-
-    leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
-    leapController.connect();
-
-    audio = document.createElement('audio');
-    audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
-    audio.autoplay='autoplay';
-    audio.loop=true;
-    document.body.appendChild(audio);
-    render();
 }
-
-init();
-
 
 //player model
 var player=function()
@@ -108,17 +103,27 @@ var player=function()
 
 function createPlayer()
 {
-
-    gamePlayer = new player();
+    gamePlayer=new player();
     gamePlayer.mesh.scale.set(.30,.30,.30);
     //gamePlayer.mesh.position.x=1/2*window.innerWidth;
     gamePlayer.mesh.position.y = 100;
+
+    leapController.loop(function(frame)
+    {
+        if (frame.pointables.length > 0) {
+            var position = frame.pointables[0].stabilizedTipPosition;
+            gamePlayer.mesh.position.x=position[0];
+
+        }
+    });
 
 
     scene.add(gamePlayer.mesh);
 
 }
 createPlayer();
+
+render();
 
 //Obstacle model
 var obstacle=function()
@@ -215,13 +220,6 @@ function createGround()
 
 }
 createGround();
-
-function update()
-{
-
-}
-
-render();
 
 
 function crash()

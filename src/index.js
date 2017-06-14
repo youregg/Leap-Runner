@@ -21,6 +21,9 @@ var dead=false;
 
 var container=document.getElementById('gameContainer');//get game container
 
+//all game models
+var gamePlayer;
+
 //create game scene
 var scene =new THREE.Scene();
 
@@ -52,14 +55,15 @@ function render() {
 render();
 
 //initialize leap motion control
-var leapController=new Leap.Controller();
+var leapController = new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
 leapController.connect();
 
 //leap camera control
-//var cameraControl=new THREE.LeapCameraControls();
+var cameraControls=new THREE.LeapCameraControls(camera);
+
 
 //leap object control
-//var objectControl=new THREE.LeapObjectControls();
+var objectControls=new THREE.LeapObjectControls(camera,gamePlayer);
 
 //add background music
 var audio = document.createElement('audio');
@@ -67,6 +71,8 @@ audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
 audio.autoplay='autoplay';
 audio.loop=true;
 document.body.appendChild(audio);
+
+
 
 //player model
 var player=function()
@@ -86,12 +92,25 @@ var player=function()
     this.mesh.receiveShadow = true;
 }
 
+
 function createPlayer()
 {
-    player = new player();
-    player.mesh.scale.set(.50,.50,.50);
-    player.mesh.position.y = 100;
-    scene.add(player.mesh);
+    gamePlayer = new player();
+    gamePlayer.mesh.scale.set(.50,.50,.50);
+    gamePlayer.mesh.position.y = 100;
+
+    scene.add(gamePlayer.mesh);
+
+    leapController.loop({
+        hand: function(hand){
+
+            console.log( hand.screenPosition()[0] );
+            gamePlayer.mesh.position.x=hand.screenPosition()[0];
+        }
+
+    }).use('screenPosition');
+
+
 
 }
 
@@ -104,7 +123,8 @@ var obstacle=function()
 
 function createObstacle()
 {
-
+    obstacle=new obstacle();
+    scene.add(obstacle);
 }
 
 //coin model
@@ -116,7 +136,8 @@ var coin=function()
 
 function createCoin()
 {
-
+    coin=new coin();
+    scene.add(coin);
 }
 
 //sky model
@@ -128,7 +149,8 @@ var sky=function()
 
 function createSky()
 {
-
+    sky=new sky();
+    scene.add(sky);
 }
 
 function crash()
@@ -153,7 +175,10 @@ function resumeGame()
 
 function dead()
 {
+    if(dead==true)
+    {
 
+    }
 }
 
 

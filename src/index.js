@@ -23,6 +23,7 @@ var container=document.getElementById('gameContainer');//get game container
 
 //all game models
 var gamePlayer;
+var gameGround;
 
 //create game scene
 var scene =new THREE.Scene();
@@ -151,6 +152,31 @@ function createSky()
 {
     sky=new sky();
     scene.add(sky);
+}
+
+var ground=function()
+{
+    this.mesh=new THREE.Object3D();
+    this.mesh.name="ground";
+    this.mesh.receiveShadow = true;
+
+    var geometry=new THREE.PlaneGeometry(window.innerWidth,window.innerHeight,1,1);
+    var material=new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
+
+    var plane=new THREE.Mesh(geometry,material);
+    this.mesh.add(plane);
+
+}
+
+function createGround()
+{
+    gameGround= new ground();
+
+    scene.add(gameGround.mesh);
+
+    ground.mesh.position.y = 38;
+    ground.mesh.rotation.x = -Math.PI/2;
+
 }
 
 function crash()

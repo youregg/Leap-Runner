@@ -106,9 +106,9 @@ var player=function()
     this.mesh.receiveShadow = true;
 }
 
-
 function createPlayer()
 {
+
     gamePlayer = new player();
     gamePlayer.mesh.scale.set(.30,.30,.30);
     //gamePlayer.mesh.position.x=1/2*window.innerWidth;
@@ -116,14 +116,6 @@ function createPlayer()
 
 
     scene.add(gamePlayer.mesh);
-
-    leapController.loop({
-        hand: function(hand){
-            console.log( hand.screenPosition()[0] );
-            gamePlayer.mesh.position.x=hand.screenPosition()[0];
-        }
-
-    }).use('screenPosition');
 
 }
 createPlayer();

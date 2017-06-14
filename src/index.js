@@ -17,62 +17,75 @@ var life=5;//player's life left,game end when decreased to 0
 var lifeText=document.getElementById('life');
 var difficulty=1;//difficult level
 var volume=50;//background music volume
-var dead=false;
 
-var container=document.getElementById('gameContainer');//get game container
+var dead=false;
+var crash=false;
+var clock=new THREE.Clock();
 
 //all game models
 var gamePlayer;
 var gameGround;
+var collideMeshList=[];
 
-//create game scene
-var scene =new THREE.Scene();
+var container=document.getElementById('gameContainer');//get game container
+var scene;//create game scene
+var camera;//create perspective camera
+var light;//add environmental light
+var renderer;//create game renderer
+var leapController;
+var audio;
 
 
-//create perspective camera
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );//initialize a three.js camera
-camera.position.set( 0, 200, 200 );
-scene.add(camera);
+// 返回一个介于min和max之间的随机数
+function getRandomArbitrary(min, max)
+{
+    return Math.random() * (max - min) + min;
+}
 
-//add environmental light
-var light = new THREE.AmbientLight(0xffffff);
-light.position.set(0,200,0);
-scene.add(light);
+// 返回一个介于min和max之间的整型随机数
+function getRandomInt(min, max)
+{
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
-//create game renderer
-var renderer=new THREE.WebGLRenderer({
-    alpha: true,
-    antialias: true
-});
-renderer.setSize(window.innerWidth,window.innerHeight);
-container.appendChild(renderer.domElement);
-renderer.shadowMapEnabled=true;//add object shadow
-
-//render the scene
 function render() {
     requestAnimationFrame(render);
+    update();
     renderer.render( scene, camera );
 }
-render();
 
-//initialize leap motion control
-var leapController = new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
-leapController.connect();
+function init()
+{
+    scene=new THREE.Scene();
+    camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    camera.position.set( 0, 200, 200 );
 
-//leap camera control
-var cameraControls=new THREE.LeapCameraControls(camera);
+    light= new THREE.AmbientLight(0xffffff);
+    light.position.set(0,200,0);
 
+    renderer=new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true
+    });
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    container.appendChild(renderer.domElement);
+    renderer.shadowMapEnabled=true;//add object shadow
 
-//leap object control
-var objectControls=new THREE.LeapObjectControls(camera,gamePlayer);
+    scene.add(camera);
+    scene.add(light);
 
-//add background music
-var audio = document.createElement('audio');
-audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
-audio.autoplay='autoplay';
-audio.loop=true;
-document.body.appendChild(audio);
+    leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
+    leapController.connect();
 
+    audio = document.createElement('audio');
+    audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
+    audio.autoplay='autoplay';
+    audio.loop=true;
+    document.body.appendChild(audio);
+    render();
+}
+
+init();
 
 
 //player model
@@ -97,36 +110,66 @@ var player=function()
 function createPlayer()
 {
     gamePlayer = new player();
-    gamePlayer.mesh.scale.set(.50,.50,.50);
+    gamePlayer.mesh.scale.set(.30,.30,.30);
+    //gamePlayer.mesh.position.x=1/2*window.innerWidth;
     gamePlayer.mesh.position.y = 100;
+
 
     scene.add(gamePlayer.mesh);
 
     leapController.loop({
         hand: function(hand){
-
             console.log( hand.screenPosition()[0] );
             gamePlayer.mesh.position.x=hand.screenPosition()[0];
         }
 
     }).use('screenPosition');
 
-
-
 }
+createPlayer();
 
 //Obstacle model
 var obstacle=function()
 {
     this.mesh=new THREE.Object3D();
     this.mesh.name="obstacle";
+    var geometry=new THREE.BoxGeometry(80,20,20);
+    var material=new THREE.MeshPhongMaterial({color:Colors.blue});
+    var obs=new THREE.Mesh(geometry,material);
+
+    obs.castShadow=true;
+    obs.receiveShadow=true;
+    this.mesh.add(obs);
+
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
 }
 
-function createObstacle()
+function createObstacles()
 {
-    obstacle=new obstacle();
-    scene.add(obstacle);
+    var id=0;
+    for(var i=0;i<10;i++)
+    {
+
+        var a = 1 * 50,
+            b = getRandomInt(1, 3) * 50,
+            c = 1 * 50;
+
+        var geometry = new THREE.CubeGeometry(a,b,c);
+        var material = new THREE.MeshBasicMaterial({ color:Colors.blue });
+        var mesh = new THREE.Mesh(geometry, material);
+
+        mesh.position.x = getRandomArbitrary(-250, 250);
+        mesh.position.y = 1 + b / 2;
+        mesh.position.z = getRandomArbitrary(-800, -1200);
+        scene.add(mesh);
+        collideMeshList.push(mesh);
+
+    }
+
 }
+
+createObstacles();
 
 //coin model
 var coin=function()
@@ -160,24 +203,34 @@ var ground=function()
     this.mesh.name="ground";
     this.mesh.receiveShadow = true;
 
-    var geometry=new THREE.PlaneGeometry(window.innerWidth,window.innerHeight,1,1);
-    var material=new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
+    var geometry=new THREE.PlaneGeometry(800, 10000, 10, 10);
+    var material=new THREE.MeshPhongMaterial({color: Colors.white, side: THREE.DoubleSide});
+
 
     var plane=new THREE.Mesh(geometry,material);
+    plane.position.y = -0.5;
+    plane.rotation.x = Math.PI / 2;
     this.mesh.add(plane);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
 
 }
 
 function createGround()
 {
     gameGround= new ground();
-
     scene.add(gameGround.mesh);
 
-    ground.mesh.position.y = 38;
-    ground.mesh.rotation.x = -Math.PI/2;
+}
+createGround();
+
+function update()
+{
 
 }
+
+render();
+
 
 function crash()
 {
@@ -205,6 +258,11 @@ function dead()
     {
 
     }
+}
+
+function createRandomCube()
+{
+
 }
 
 

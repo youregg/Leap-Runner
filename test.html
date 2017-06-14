@@ -1,27 +1,296 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <script src="src\leap.js"></script>
-    <style type="text/css">
-        #position {
-            width: 25px;
-            height: 25px;
-            position: absolute;
-            background-color: blue;
-        }
-    </style>
+    <title>练手</title>
+    <meta charset="utf-8">
+
+
 </head>
 <body>
-<div id="position"></div>
-</body>
-<script type="text/javascript">
-    Leap.loop(function(frame) {
-        if (frame.pointables.length > 0) {
-            var position = frame.pointables[0].stabilizedTipPosition;
-            var normalized = frame.interactionBox.normalizePoint(position);
-            var element = document.getElementById("position");
-            element.style.left = window.innerWidth * normalized[0];
-            element.style.top = window.innerHeight * (1 - normalized[1]);
+
+<script src="src\three.min.js"></script>
+<script src="src\Detector.js"></script>
+
+<script src="src\OrbitControls.js"></script>
+
+
+<script>
+    if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+    var camera, scene, renderer;
+    var clock = new THREE.Clock();
+    //var controls;
+
+    var velocity = new THREE.Vector3();
+    var birdmesh;
+    var objects = [];
+    init();
+    animate();
+
+
+    function init()
+    {
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+//
+        camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 100000);
+        camera.up.set(0, 0, 1);
+        camera.lookAt(new THREE.Vector3(-1, 1, 0));
+
+        scene = new THREE.Scene();
+//
+        scene.add( new THREE.HemisphereLight( 0x443333, 0x222233 ) );
+        var light = new THREE.DirectionalLight( 0xffffff, 1 );
+        light.position.set( 1, 1, 1 );
+        scene.add( light );
+        //------添加内容
+
+
+        //---地板，平面
+        geometry = new THREE.PlaneGeometry(512, 200000);
+
+        //geometry.rotateX(-Math.PI / 2);
+
+
+        var texture = new THREE.TextureLoader().load('img/dd.jpg');
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(8, 800)
+        material = new THREE.MeshBasicMaterial({ map: texture });
+
+        //material = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(0, 0, 0);
+        scene.add(mesh);
+        objects.push(mesh);
+
+        ////箱子1
+        //geometry = new THREE.BoxGeometry(2, 2, 2);
+        //material = new THREE.MeshBasicMaterial({color:0x000000});
+        //mesh = new THREE.Mesh(geometry, material);
+        //mesh.position.set(0,0,0);
+        //scene.add(mesh);
+
+        ////箱子2
+        //geometry = new THREE.BoxGeometry(2, 2, 2);
+        //material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        //mesh = new THREE.Mesh(geometry, material);
+        //mesh.position.set(100, 0, 0);
+        //scene.add(mesh);
+
+        ////箱子3
+        //geometry = new THREE.BoxGeometry(2, 2, 2);
+        //material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        //mesh = new THREE.Mesh(geometry, material);
+        //mesh.position.set(0, 100, 0);
+        //scene.add(mesh);
+
+        ////箱子4
+        //geometry = new THREE.BoxGeometry(2, 2, 2);
+        //material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        //mesh = new THREE.Mesh(geometry, material);
+        //mesh.position.set(0, 0, 100);
+        //scene.add(mesh);
+
+
+        //天空盒
+        var textureLoader = new THREE.TextureLoader();
+        var materials = [
+            new THREE.MeshBasicMaterial({ map: textureLoader.load('img/px.jpg') }), // right
+            new THREE.MeshBasicMaterial({ map: textureLoader.load('img/nx.jpg') }), // left
+            new THREE.MeshBasicMaterial({ map: textureLoader.load('img/py.jpg') }), // top
+            new THREE.MeshBasicMaterial({ map: textureLoader.load('img/ny.jpg') }), // bottom
+            new THREE.MeshBasicMaterial({ map: textureLoader.load('img/pz.jpg') }), // back
+            new THREE.MeshBasicMaterial({ map: textureLoader.load('img/nz.jpg') })  // front
+        ];
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(100000, 100000, 100000, 7, 7, 7), new THREE.MultiMaterial(materials));
+        mesh.scale.x = -1;
+        scene.add(mesh);
+
+
+        //连续障碍物
+        for (var i = 0; i < 50;i++) {
+            var ht=Math.random() * 450;
+            geometry = new THREE.BoxGeometry(80, 20, ht);
+            material = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff });
+            mesh = new THREE.Mesh(geometry, material);
+
+            mesh.position.x =0;
+            mesh.position.y = (i+1) * 500;
+            mesh.position.z = ht / 2;
+            scene.add(mesh);
+
+            objects.push(mesh);
+
+
+            geometry = new THREE.BoxGeometry(80, 20, 450-ht);
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.position.x = 0;
+            mesh.position.y = (i + 1) * 500;
+            mesh.position.z = ht  + 140 + (450 - ht) / 2;
+            scene.add(mesh);
+
+            objects.push(mesh);
+
+
         }
-    });
+
+
+
+
+
+        //鸟
+        var loader = new THREE.JSONLoader();
+
+        loader.load( "models/animated/flamingo.js", function( geometry ) {
+            geometry.computeVertexNormals();
+            geometry.computeMorphNormals();
+            var material = new THREE.MeshPhongMaterial( {
+                color: 0xffffff,
+                morphTargets: true,
+                morphNormals: true,
+                vertexColors: THREE.FaceColors,
+                shading: THREE.SmoothShading
+            } );
+            birdmesh = new THREE.Mesh( geometry, material );
+            birdmesh.position.x = 0;
+            birdmesh.position.y = 0;
+            birdmesh.position.z = 200;
+            birdmesh.scale.set(0.2, 0.2, 0.2);
+            birdmesh.rotateX(-Math.PI / 2);
+            birdmesh.rotateZ(Math.PI);
+            scene.add(birdmesh);
+            mixer = new THREE.AnimationMixer(birdmesh);
+
+
+
+            var clip = THREE.AnimationClip.CreateFromMorphTargetSequence('bd', geometry.morphTargets, 30);
+            mixer.clipAction(clip).setDuration(1).play();
+
+
+            window.addEventListener('mousedown', function (event) {
+
+                velocity.z = 500;
+                mixer.clipAction(clip).setDuration(0.1).play();
+
+
+
+            }, false);
+
+            window.addEventListener('mouseup', function (event) {
+
+                mixer.clipAction(clip).setDuration(1).play();
+
+            }, false);
+
+
+        } );
+
+
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild( renderer.domElement );
+
+        //控制
+
+        //var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        //controls.addEventListener('change', render);
+        //controls.target.set(0, 0, 0);
+        //controls.update();
+
+        //
+        window.addEventListener('resize', function onWindowResize(event) {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = 0.5 * window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        }, false);
+
+    }
+
+
+    //
+    function animate() {
+
+
+        requestAnimationFrame( animate );
+        render();
+
+    }
+
+
+
+
+
+    function render() {
+
+        var delta = clock.getDelta();
+
+        //这里100就是速度的一个因子，数值越大，重力效果越明显,等效于velocity.y =(velocity.y*0.01- 9.8  * delta)*100;
+        velocity.z -= 9.8 * 100 * delta;
+
+        birdmesh.position.z += velocity.z*delta;
+        birdmesh.position.y += velocity.y * delta;
+
+        velocity.y = 200;
+
+        var raycaster1 = new THREE.Raycaster(birdmesh.position, new THREE.Vector3(0, 1, 0), 0, 30)
+        var raycaster2 = new THREE.Raycaster(birdmesh.position, new THREE.Vector3(0, 0, 1), 0, 10)
+        var raycaster3 = new THREE.Raycaster(birdmesh.position, new THREE.Vector3(0, 0, -1), 0, 10)
+        //
+        var intersections1 = raycaster1.intersectObjects(objects);
+        var intersections2 = raycaster2.intersectObjects(objects);
+        var intersections3 = raycaster3.intersectObjects(objects);
+        //是否检测到
+
+        if (intersections1.length > 0)
+        {
+            velocity.y = 0;
+        }
+
+
+        if (intersections2.length > 0 )
+        {
+            if (velocity.z > 0)
+            {
+                velocity.z = 0;
+            }
+
+        }
+
+        if (intersections3.length > 0) {
+            if (velocity.z < 0)
+            {
+                velocity.z = 0;
+            }
+
+        }
+
+        if (birdmesh.position.z < 10)
+        {
+            birdmesh.position.z = 10;
+        }
+
+        if (birdmesh.position.z > 575) {
+            birdmesh.position.z = 575;
+        }
+
+
+        if (velocity.y==0)
+        {
+            alert('您已死亡！');
+        }
+
+
+        mixer.update(delta);
+
+        camera.position.set(birdmesh.position.x+100, birdmesh.position.y - 50, birdmesh.position.z);
+
+        renderer.clear();
+        renderer.render( scene, camera );
+    }
 </script>
-<html>
+
+</body>
+</html>

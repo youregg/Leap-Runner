@@ -31,11 +31,18 @@
 
         #deadScene
         {
-
-            font-family:"Apple LiGothic";
-            font-size:100px;
-
-            display: none;
+            position: absolute;
+            width: 100%;
+            z-index: 6;
+            top: 37vh;
+            font-size: 10vh;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.92);
+            display:block;
+            text-align: center;
+            font-family: "Apple LiGothic";
+            color:darkgray;
+            background-color: inherit;
         }
     </style>
 
@@ -62,9 +69,8 @@
 <script src="src\three.min.js"></script>
 <script src="src\LeapCameraControls.js"></script>
 <script src="src\LeapObjectControls.js"></script>
-<script src="src\Detector.js"></script>
+<script src="src\physi.js"></script>
 <script src="src\OrbitControls.js"></script>
-<script src="src\THREEx.KeyboardState.js"></script>
 <script src="src\leap-plugins.js"></script>
 <script src="src\jquery.js"></script>
 <script src="src\index.js"></script>

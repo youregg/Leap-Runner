@@ -22,9 +22,11 @@ var dead=false;
 var crash=false;
 var clock=new THREE.Clock();
 
-//all game models
+//all game modeels
 var gamePlayer;
 var gameGround;
+
+var obstacleList=[];
 var collideMeshList=[];
 
 var container=document.getElementById('gameContainer');//get game container
@@ -69,22 +71,13 @@ function getRandomInt(min, max)
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function render() {
+function render()
+{
     requestAnimationFrame(render);
     update();
     renderer.render( scene, camera );
 }
 
-function update()
-{
-    var delta = clock.getDelta();
-    var moveDistance = 200 * delta;
-    gamePlayer.mesh.position.z-=moveDistance*0.6;
-    if(Math.random()*10<0.1)
-        createObstacles(gamePlayer.mesh.position.z);
-    camera.position.z =gamePlayer.mesh.position.z+200;
-
-}
 
 //player model
 var player=function()
@@ -117,16 +110,14 @@ function createPlayer()
             var position = frame.pointables[0].stabilizedTipPosition;
             gamePlayer.mesh.position.x=position[0];
 
+
         }
     });
-
-
     scene.add(gamePlayer.mesh);
 
 }
 createPlayer();
 
-render();
 
 //Obstacle model
 var obstacle=function()
@@ -220,12 +211,56 @@ function createGround()
 
 createGround();
 
+function update()
+{
+    var delta = clock.getDelta();
+    var moveDistance = 200 * delta;
 
-var originPoint=gamePlayer.mesh.position.clone();
+    gamePlayer.mesh.position.z-=moveDistance*0.6;
+    if(Math.random()*10<0.1)
+    {
+        createObstacles(gamePlayer.mesh.position.z);
+    }
+    crashDetection();
+    camera.position.z =gamePlayer.mesh.position.z+200;
 
+    gameGround.mesh.position.z=gamePlayer.mesh.position.z;
+    document.getElementById('score').innerHTML="score"+score;
+
+
+}
+
+render();
 
 function crashDetection()
 {
+    var originPoint=gamePlayer.mesh.position.clone();
+
+    for (var vertexIndex = 0; vertexIndex < gamePlayer.mesh.children[0].geometry.vertices.length; vertexIndex++)
+    {
+        var localVertex = gamePlayer.mesh.children[0].geometry.vertices[vertexIndex].clone();
+        var globalVertex = localVertex.applyMatrix4( gamePlayer.mesh.matrix );
+        var directionVector = globalVertex.sub( gamePlayer.mesh.position );
+
+        var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+        var collisionResults = ray.intersectObjects( collideMeshList );
+        if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )
+        {
+            crash=true;
+            console.log("hit")
+            score--;
+
+            break;
+
+        }
+        crash=false;
+
+    }
+
+    //var raycaster=new THREE.Raycaster(camera.position,vector.sub(camera.position).normalize());
+
+    //var intersects=raycaster.intersectObject(collideMeshList);
+
 
 }
 
@@ -245,7 +280,7 @@ function resumeGame()
 
 }
 
-function dead()
+function judgeDeath()
 {
     if(dead==true)
     {

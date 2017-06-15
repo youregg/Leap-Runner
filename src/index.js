@@ -110,6 +110,9 @@ function createPlayer()
             var position = frame.pointables[0].stabilizedTipPosition;
             gamePlayer.mesh.position.x=position[0];
 
+            camera.rotation.z=gamePlayer.mesh.position.x*0.0005;
+            //camera.rotation.y=gamePlayer.mesh.position.y*0.001;
+
 
         }
     });
@@ -214,7 +217,10 @@ createGround();
 function update()
 {
     var delta = clock.getDelta();
-    var moveDistance = 200 * delta;
+    var unitScore=10;
+    var moveDistance = 400 * delta;
+
+    score+=unitScore*delta;
 
     gamePlayer.mesh.position.z-=moveDistance*0.6;
     if(Math.random()*10<0.1)
@@ -223,6 +229,7 @@ function update()
     }
     crashDetection();
     camera.position.z =gamePlayer.mesh.position.z+200;
+
 
     gameGround.mesh.position.z=gamePlayer.mesh.position.z;
     document.getElementById('score').innerHTML="score"+score;
@@ -248,7 +255,7 @@ function crashDetection()
         {
             crash=true;
             console.log("hit")
-            score--;
+            score-=10;
 
             break;
 

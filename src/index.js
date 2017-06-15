@@ -79,7 +79,10 @@ function update()
 {
     var delta = clock.getDelta();
     var moveDistance = 200 * delta;
-    camera.position.z += moveDistance * 0.6;
+    gamePlayer.mesh.position.z-=moveDistance*0.6;
+    if(Math.random()*10<0.1)
+        createObstacles(gamePlayer.mesh.position.z);
+    camera.position.z =gamePlayer.mesh.position.z+200;
 
 }
 
@@ -142,27 +145,22 @@ var obstacle=function()
     this.mesh.receiveShadow = true;
 }
 
-function createObstacles()
+function createObstacles(zScale)
 {
-    var id=0;
-    for(var i=0;i<10;i++)
-    {
 
-        var a = 1 * 50,
-            b = getRandomInt(1, 3) * 50,
-            c = 1 * 50;
+    var a = 1 * 50,
+        b = getRandomInt(1, 3) * 50,
+        c = 1 * 50;
 
-        var geometry = new THREE.CubeGeometry(a,b,c);
-        var material = new THREE.MeshBasicMaterial({ color:Colors.blue });
-        var mesh = new THREE.Mesh(geometry, material);
+    var geometry = new THREE.CubeGeometry(a,b,c);
+    var material = new THREE.MeshBasicMaterial({ color:Colors.blue });
+    var mesh = new THREE.Mesh(geometry, material);
 
-        mesh.position.x = getRandomArbitrary(-250, 250);
-        mesh.position.y = 1 + b / 2;
-        mesh.position.z = getRandomArbitrary(-800, -1200);
-        scene.add(mesh);
-        collideMeshList.push(mesh);
-
-    }
+    mesh.position.x = getRandomArbitrary(-250, 250);
+    mesh.position.y = 1 + b / 2;
+    mesh.position.z = zScale-500;
+    scene.add(mesh);
+    collideMeshList.push(mesh);
 
 }
 
@@ -219,16 +217,21 @@ function createGround()
     scene.add(gameGround.mesh);
 
 }
+
 createGround();
 
 
-function crash()
+var originPoint=gamePlayer.mesh.position.clone();
+
+
+function crashDetection()
 {
 
 }
 
 function startGame()
 {
+
 
 }
 
@@ -246,14 +249,11 @@ function dead()
 {
     if(dead==true)
     {
-
+        $('#deadScene').css('display','block');
     }
 }
 
-function createRandomCube()
-{
 
-}
 
 
 

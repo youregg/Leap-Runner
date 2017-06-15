@@ -30,8 +30,20 @@ var collideMeshList=[];
 var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
 
-var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 0, 200, 200 );;//create perspective camera
+
+var aspectRatio = window.innerWidth/ window.innerHeight;
+var fieldOfView = 60;
+var nearPlane = 1;
+var farPlane = 1000;
+var camera = new THREE.PerspectiveCamera(
+    fieldOfView,
+    aspectRatio,
+    nearPlane,
+    farPlane
+);
+
+//var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.position.set( 0, 100, 200 );//create perspective camera
 
 var light= new THREE.AmbientLight(0xffffff);
 light.position.set(0,200,0);//add environmental light
@@ -198,15 +210,14 @@ var ground=function()
     this.mesh.name="ground";
     this.mesh.receiveShadow = true;
 
-    var geometry=new THREE.PlaneGeometry(800, 10000, 10, 10);
-    var material=new THREE.MeshPhongMaterial({color: Colors.white, side: THREE.DoubleSide});
+    var geometry=new THREE.PlaneGeometry(window.innerWidth,window.innerWidth,1,1);
+    //var geometry=new THREE.PlaneGeometry(800, 10000, 10, 10);
+    var material=new THREE.MeshPhongMaterial({color: Colors.brown});
 
 
     var plane=new THREE.Mesh(geometry,material);
-    plane.position.y = -0.5;
-    plane.rotation.x = Math.PI / 2;
+
     this.mesh.add(plane);
-    this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 
 }
@@ -214,8 +225,11 @@ var ground=function()
 function createGround()
 {
     gameGround= new ground();
-    scene.add(gameGround.mesh);
 
+    scene.add(gameGround.mesh);
+    gameGround.mesh.position.y = 38;
+    gameGround.mesh.rotation.x = -Math.PI / 2;
+    console.log(gameGround.color)
 }
 
 createGround();

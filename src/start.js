@@ -121,10 +121,6 @@ function Sun(radius) {
 THREE.ImageUtils.crossOrigin = '';
 
 
-
-
-
-/* LANDSCAPE */
 planeGeometry = new THREE.CylinderGeometry(1000, 1000, 1, 100);
 planeMaterial = new THREE.MeshLambertMaterial({
     color: 0xa6bcc5

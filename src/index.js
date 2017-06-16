@@ -17,9 +17,11 @@ var life=5;//player's life left,game end when decreased to 0
 
 var difficulty=1;//difficult level
 var volume=50;//background music volume
+var distance=0;
 
 var obstacleCount=10;
 var speed=400;
+
 
 var dead=false;
 var crash=false;
@@ -162,14 +164,18 @@ var tree=function()
     var trunkGeometry = new THREE.CylinderGeometry( 20, 20, 80);
     var trunkMaterial = new THREE.MeshLambertMaterial( {color: 0x5D4037} );
     var trunk = new THREE.Mesh( trunkGeometry, trunkMaterial);
+    trunk.receiveShadow=true;
+    trunk.castShadow=true;
 
     this.mesh.add(trunk);
 
-    var coneGeometry=new THREE.CylinderGeometry(0,80,100);
+    var coneGeometry=new THREE.CylinderGeometry(0,80,200);
     var coneMaterial=new THREE.MeshLambertMaterial({color:0x4db6ac,shading:THREE.FlatShading});
     var cone=new THREE.Mesh(coneGeometry,coneMaterial);
+    cone.receiveShadow=true;
+    cone.castShadow=true;
 
-    cone.position.y=80;
+    cone.position.y=100;
     this.mesh.add(cone);
 }
 
@@ -185,7 +191,7 @@ function createObstacles(zScale)
     myTree.mesh.position.y = 1 + b / 2;
     myTree.mesh.position.z = zScale-500;
     scene.add(myTree.mesh);
-    collideMeshList.push(myTree.mesh);
+    collideMeshList.push(myTree.mesh.children[1]);
 
 }
 
@@ -196,20 +202,20 @@ var ground=function()
     this.mesh=new THREE.Object3D();
     this.mesh.name="ground";
 
-    var geometry=new THREE.PlaneGeometry(2000, 10000);
+    var geometry=new THREE.PlaneGeometry(2000,10000);
     var material=new THREE.MeshLambertMaterial({color: 0xCCCCCC,
-        emissive: 0x000000,
+        emissive: 0xa6bcc5,
         shading: THREE.FlatShading,
         side: THREE.DoubleSide});
 
 
     var gameGround=new THREE.Mesh(geometry,material);
     gameGround.position.y = -0.5;
-    gameGround.rotation.x = -Math.PI / 2;
+    gameGround.rotation.x = -Math.PI/2;
 
     this.mesh.add(gameGround);
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
+    gameGround.castShadow = true;
+    gameGround.receiveShadow = true;
 
 }
 
@@ -226,21 +232,22 @@ function update()
 {
     var delta = clock.getDelta();
     var unitScore=10;
-    var moveDistance = speed*delta;
 
-    score+=unitScore*delta;
+    var moveDistance=speed*delta;
 
-    gamePlayer.mesh.position.z-=moveDistance*0.6;
-    if(Math.random()<0.01)
+    distance+=moveDistance;
+
+    gamePlayer.mesh.position.z-=moveDistance*0.8;
+    if(Math.random()<0.03)
     {
         createObstacles(gamePlayer.mesh.position.z);
     }
     crashDetection();
     camera.position.z =gamePlayer.mesh.position.z+200;
 
-
     gameGround.mesh.position.z=gamePlayer.mesh.position.z;
-    document.getElementById('score').innerHTML="score"+score;
+    document.getElementById('score').innerHTML="Score: "+score.toFixed(0);
+    document.getElementById('distance').innerHTML="Distance: "+distance.toFixed(0);
 
 
 }
@@ -277,6 +284,7 @@ function crashDetection()
 
 
 }
+
 
 function startGame()
 {

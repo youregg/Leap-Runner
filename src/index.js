@@ -36,7 +36,7 @@ var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
 
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 0, 200, 200 );;//create perspective camera
+camera.position.set( 0, 200, 200 );//create perspective camera
 scene.add(camera);
 
 var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.6);
@@ -49,10 +49,6 @@ centerLight.position.y = 500;
 scene.add(centerLight);
 
 
-var frontLight = new THREE.PointLight( 0xFFFFFF, 1, 2500 );
-frontLight.position.z = 200;
-scene.add(frontLight);
-
 
 
 
@@ -64,6 +60,7 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;//add object shadow
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0xB0BEC5, 1);
 
 //capture mouse events on the canvas element to re-position our camera around the scene
 var orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
@@ -124,7 +121,7 @@ function createPlayer()
 {
     gamePlayer=new player();
     gamePlayer.mesh.scale.set(.30,.30,.30);
-    //gamePlayer.mesh.position.x=1/2*window.innerWidth;
+
     gamePlayer.mesh.position.y = 100;
 
     leapController.loop(function(frame)
@@ -132,11 +129,7 @@ function createPlayer()
         if (frame.pointables.length > 0) {
             var position = frame.pointables[0].stabilizedTipPosition;
             gamePlayer.mesh.position.x=position[0];
-
             camera.rotation.z=gamePlayer.mesh.position.x*0.0005;
-            //camera.rotation.y=gamePlayer.mesh.position.y*0.001;
-
-
         }
     });
     scene.add(gamePlayer.mesh);
@@ -144,43 +137,6 @@ function createPlayer()
 }
 createPlayer();
 
-
-
-//Obstacle model
-var obstacle=function()
-{
-    this.mesh=new THREE.Object3D();
-    this.mesh.name="obstacle";
-    var geometry=new THREE.BoxGeometry(80,20,20);
-    var material=new THREE.MeshPhongMaterial({color:Colors.blue});
-    var obs=new THREE.Mesh(geometry,material);
-
-    obs.castShadow=true;
-    obs.receiveShadow=true;
-    this.mesh.add(obs);
-
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
-}
-
-function createObstacles(zScale)
-{
-
-    var a = 1 * 50,
-        b = getRandomInt(1, 3) * 50,
-        c = 1 * 50;
-
-    var geometry = new THREE.CubeGeometry(a,b,c);
-    var material = new THREE.MeshBasicMaterial({ color:Colors.blue });
-    var mesh = new THREE.Mesh(geometry, material);
-
-    mesh.position.x = getRandomArbitrary(-250, 250);
-    mesh.position.y = 1 + b / 2;
-    mesh.position.z = zScale-500;
-    scene.add(mesh);
-    collideMeshList.push(mesh);
-
-}
 
 
 //sky model
@@ -196,20 +152,62 @@ function createSky()
     scene.add(sky);
 }
 
+var tree=function()
+{
+    this.mesh=new THREE.Object3D();
+    this.mesh.name="tree";
+    this.mesh.receiveShadow=true;
+    this.mesh.castShadow=true;
+
+    var trunkGeometry = new THREE.CylinderGeometry( 20, 20, 80);
+    var trunkMaterial = new THREE.MeshLambertMaterial( {color: 0x5D4037} );
+    var trunk = new THREE.Mesh( trunkGeometry, trunkMaterial);
+
+    this.mesh.add(trunk);
+
+    var coneGeometry=new THREE.CylinderGeometry(0,80,100);
+    var coneMaterial=new THREE.MeshLambertMaterial({color:0x4db6ac,shading:THREE.FlatShading});
+    var cone=new THREE.Mesh(coneGeometry,coneMaterial);
+
+    cone.position.y=80;
+    this.mesh.add(cone);
+}
+
+function createObstacles(zScale)
+{
+
+    var a = 1 * 50,
+        b = getRandomInt(1, 3) * 50,
+        c = 1 * 50;
+
+    var myTree=new tree();
+    myTree.mesh.position.x = getRandomArbitrary(-400, 400);
+    myTree.mesh.position.y = 1 + b / 2;
+    myTree.mesh.position.z = zScale-500;
+    scene.add(myTree.mesh);
+    collideMeshList.push(myTree.mesh);
+
+}
+
+
+
 var ground=function()
 {
     this.mesh=new THREE.Object3D();
     this.mesh.name="ground";
-    this.mesh.receiveShadow = true;
 
     var geometry=new THREE.PlaneGeometry(2000, 10000);
-    var material=new THREE.MeshPhongMaterial({color: Colors.white,  side: THREE.DoubleSide});
+    var material=new THREE.MeshLambertMaterial({color: 0xCCCCCC,
+        emissive: 0x000000,
+        shading: THREE.FlatShading,
+        side: THREE.DoubleSide});
 
 
-    var plane=new THREE.Mesh(geometry,material);
-    plane.position.y = -0.5;
-    plane.rotation.x = Math.PI / 2;
-    this.mesh.add(plane);
+    var gameGround=new THREE.Mesh(geometry,material);
+    gameGround.position.y = -0.5;
+    gameGround.rotation.x = -Math.PI / 2;
+
+    this.mesh.add(gameGround);
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 
@@ -233,7 +231,7 @@ function update()
     score+=unitScore*delta;
 
     gamePlayer.mesh.position.z-=moveDistance*0.6;
-    if(Math.random()*10<0.1)
+    if(Math.random()<0.01)
     {
         createObstacles(gamePlayer.mesh.position.z);
     }
@@ -266,7 +264,6 @@ function crashDetection()
             crash=true;
             console.log("hit")
             score-=10;
-
             break;
 
         }
@@ -305,9 +302,7 @@ function judgeDeath()
     }
 }
 
-var mtree=new ChristmasTree()
 
-scene.add(mtree)
 
 
 

@@ -46,19 +46,18 @@
 </div>
 
 </div>
+<script src='src\leap.js'></script>
 <script>
-    var startScene = document.getElementById("container");
-    var ctx = startScene.getContext("2d");
 
     Leap.loop({enableGestures: true}, function(frame)
     {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         frame.gestures.forEach(function(gesture) {
             if (gesture.type == "circle")
                 self.location = 'game.html';
         });
     });
 </script>
+
 <script src='src\three.min.js'></script>
 <script src='src\OrbitControls.js'></script>
 <script src='src\jquery.js'></script>

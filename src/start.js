@@ -19,6 +19,8 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;
 
+var fog=new THREE.Fog(0xffffff, 1000, 100000);
+scene.add(fog);
 
 //orbit control
 controls = new THREE.OrbitControls(camera,container);

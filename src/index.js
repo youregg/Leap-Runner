@@ -38,18 +38,19 @@ var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
 
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 0, 200, 200 );//create perspective camera
+camera.position.set( 0, 80, 200 );//create perspective camera
 scene.add(camera);
 
 var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.6);
 hemisphereLight.position.y=300;//add environmental light
 scene.add(hemisphereLight);
 
-var centerLight = new THREE.PointLight( 0xFFFFFF, 0.8, 4500 );
+var centerLight = new THREE.PointLight( 0xFFFFFF, 1, 4500 );
 centerLight.position.z = 200;
 centerLight.position.y = 500;
 scene.add(centerLight);
 
+scene.fog=new THREE.Fog(0x061837, 10, 950);
 
 
 
@@ -62,7 +63,7 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;//add object shadow
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setClearColor(0xB0BEC5, 1);
+renderer.setClearColor(0x061837, 1);
 
 //capture mouse events on the canvas element to re-position our camera around the scene
 var orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
@@ -100,6 +101,36 @@ function render()
     renderer.render( scene, camera );
 }
 
+var ground=function()
+{
+    this.mesh=new THREE.Object3D();
+    this.mesh.name="ground";
+
+    var geometry=new THREE.PlaneGeometry(2000,10000);
+    var material=new THREE.MeshLambertMaterial({color: 0xCCCCCC,
+        emissive: 0xa6bcc5,
+        shading: THREE.FlatShading,
+        side: THREE.DoubleSide});
+
+
+    var gameGround=new THREE.Mesh(geometry,material);
+    gameGround.position.y = -0.5;
+    gameGround.rotation.x = -Math.PI/2;
+
+    this.mesh.add(gameGround);
+    gameGround.castShadow = true;
+    gameGround.receiveShadow = true;
+
+}
+
+function createGround()
+{
+    gameGround= new ground();
+    scene.add(gameGround.mesh);
+
+}
+
+createGround();
 
 //player model
 var player=function()
@@ -124,7 +155,7 @@ function createPlayer()
     gamePlayer=new player();
     gamePlayer.mesh.scale.set(.30,.30,.30);
 
-    gamePlayer.mesh.position.y = 100;
+    gamePlayer.mesh.position.y=gameGround.mesh.position.y+20;
 
     leapController.loop(function(frame)
     {
@@ -139,20 +170,6 @@ function createPlayer()
 }
 createPlayer();
 
-
-
-//sky model
-var sky=function()
-{
-    this.mesh=new THREE.Object3D();
-    this.mesh.name="sky";
-}
-
-function createSky()
-{
-    sky=new sky();
-    scene.add(sky);
-}
 
 var tree=function()
 {
@@ -188,45 +205,13 @@ function createObstacles(zScale)
 
     var myTree=new tree();
     myTree.mesh.position.x = getRandomArbitrary(-400, 400);
-    myTree.mesh.position.y = 1 + b / 2;
+    myTree.mesh.position.y = gameGround.mesh.position.y+20;
     myTree.mesh.position.z = zScale-500;
     scene.add(myTree.mesh);
     collideMeshList.push(myTree.mesh.children[1]);
 
 }
 
-
-
-var ground=function()
-{
-    this.mesh=new THREE.Object3D();
-    this.mesh.name="ground";
-
-    var geometry=new THREE.PlaneGeometry(2000,10000);
-    var material=new THREE.MeshLambertMaterial({color: 0xCCCCCC,
-        emissive: 0xa6bcc5,
-        shading: THREE.FlatShading,
-        side: THREE.DoubleSide});
-
-
-    var gameGround=new THREE.Mesh(geometry,material);
-    gameGround.position.y = -0.5;
-    gameGround.rotation.x = -Math.PI/2;
-
-    this.mesh.add(gameGround);
-    gameGround.castShadow = true;
-    gameGround.receiveShadow = true;
-
-}
-
-function createGround()
-{
-    gameGround= new ground();
-    scene.add(gameGround.mesh);
-
-}
-
-createGround();
 
 function update()
 {
@@ -277,11 +262,6 @@ function crashDetection()
         crash=false;
 
     }
-
-    //var raycaster=new THREE.Raycaster(camera.position,vector.sub(camera.position).normalize());
-
-    //var intersects=raycaster.intersectObject(collideMeshList);
-
 
 }
 

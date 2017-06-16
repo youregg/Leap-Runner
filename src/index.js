@@ -12,11 +12,14 @@ var Colors = {
 
 //game info
 var score=0;//current score
-var scoreText=document.getElementById('score');
+
 var life=5;//player's life left,game end when decreased to 0
-var lifeText=document.getElementById('life');
+
 var difficulty=1;//difficult level
 var volume=50;//background music volume
+
+var obstacleCount=10;
+var speed=400;
 
 var dead=false;
 var crash=false;
@@ -34,9 +37,24 @@ var scene=new THREE.Scene();//create game scene
 
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.set( 0, 200, 200 );;//create perspective camera
+scene.add(camera);
 
-var light= new THREE.AmbientLight(0xffffff);
-light.position.set(0,200,0);//add environmental light
+var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.6);
+hemisphereLight.position.y=300;//add environmental light
+scene.add(hemisphereLight);
+
+var centerLight = new THREE.PointLight( 0xFFFFFF, 0.8, 4500 );
+centerLight.position.z = 200;
+centerLight.position.y = 500;
+scene.add(centerLight);
+
+
+var frontLight = new THREE.PointLight( 0xFFFFFF, 1, 2500 );
+frontLight.position.z = 200;
+scene.add(frontLight);
+
+
+
 
 var renderer=new THREE.WebGLRenderer({
     alpha: true,
@@ -45,10 +63,15 @@ var renderer=new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;//add object shadow
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-scene.add(camera);
-scene.add(light);
+//capture mouse events on the canvas element to re-position our camera around the scene
+var orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
+orbitControl.target = new THREE.Vector3(0,15,0);
+orbitControl.maxPolarAngle = Math.PI / 2;
+orbitControl.addEventListener( 'change', function() { renderer.render(scene, camera)});
 
+//controll to the leap motion device
 var leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
 leapController.connect();
 
@@ -122,6 +145,7 @@ function createPlayer()
 createPlayer();
 
 
+
 //Obstacle model
 var obstacle=function()
 {
@@ -158,20 +182,6 @@ function createObstacles(zScale)
 
 }
 
-createObstacles();
-
-//coin model
-var coin=function()
-{
-    this.mesh=new THREE.Object3D();
-    this.mesh.name="coin";
-}
-
-function createCoin()
-{
-    coin=new coin();
-    scene.add(coin);
-}
 
 //sky model
 var sky=function()
@@ -192,8 +202,8 @@ var ground=function()
     this.mesh.name="ground";
     this.mesh.receiveShadow = true;
 
-    var geometry=new THREE.PlaneGeometry(800, 10000, 10, 10);
-    var material=new THREE.MeshPhongMaterial({color: Colors.white, side: THREE.DoubleSide});
+    var geometry=new THREE.PlaneGeometry(2000, 10000);
+    var material=new THREE.MeshPhongMaterial({color: Colors.white,  side: THREE.DoubleSide});
 
 
     var plane=new THREE.Mesh(geometry,material);
@@ -218,7 +228,7 @@ function update()
 {
     var delta = clock.getDelta();
     var unitScore=10;
-    var moveDistance = 400 * delta;
+    var moveDistance = speed*delta;
 
     score+=unitScore*delta;
 
@@ -294,6 +304,10 @@ function judgeDeath()
         $('#deadScene').css('display','block');
     }
 }
+
+var mtree=new ChristmasTree()
+
+scene.add(mtree)
 
 
 

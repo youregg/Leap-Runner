@@ -13,12 +13,14 @@
         position:absolute;
         width:100%;
         background-color: aliceblue;
-        opacity: 0.5;
+        opacity: 0.9;
         top:37vh;
         height:180px;
         text-align: center;
         font-family: "Apple LiGothic";
         font-weight: lighter;
+        display: block;
+
 
     }
 
@@ -33,26 +35,169 @@
         font-weight: lighter;
     }
 
+    #settingsPanel
+    {
+        position:absolute;
+        width:100%;
+        background-color: aliceblue;
+        opacity: 0.5;
+        top:15vh;
+        left:0px;
+        height:500px;
+        opacity: 0.9;
+        font-family: "Apple LiGothic";
+        font-weight: lighter;
+        display: none;
+
+    }
+
+
+    #settingsTitle
+    {
+        font-size:80px;
+        text-align: center;
+
+    }
+
+    .volumeBlock
+    {
+        height: 40px;
+        width: 110px;
+        background-color:darkseagreen;
+        position: absolute;
+        left:0px;
+
+
+    }
+
+
+    #volumePanel
+    {
+        position:absolute;
+        text-align: center;
+        font-family: "Apple LiGothic";
+        font-size:40px;
+        left:350px;
+        top:100px;
+    }
+
+    .velocityBlock
+    {
+        height: 40px;
+        width: 110px;
+        background-color:lightyellow;
+        position: absolute;
+        left:0px;
+    }
+
+    #velocityPanel
+    {
+        position:absolute;
+        text-align: center;
+        font-family: "Apple LiGothic";
+        font-size: 40px;
+        left:550px;
+        top:100px;
+    }
+
+    .levelBlock
+    {
+        height: 40px;
+        width: 110px;
+        background-color:cadetblue;
+        position: absolute;
+        left:0px;
+    }
+
+    #levelPanel
+    {
+        position:absolute;
+        text-align: center;
+        font-family: "Apple LiGothic";
+        font-size: 40px;
+        left:750px;
+        top:100px;
+    }
+
+
+
+
+
 </style>
 
 
 <body>
 <div id="container"></div>
+
 <div id="info">
-    <div id="gameTitle">Forest Runner</div>
+    <div id="gameTitle">
+        Forest Runner
+    </div>
     <div id="gameInstruction">
-        Connect your leap motion device and draw a circle to start.
+        Connect your leap motion device and draw a circle to start
+        <br>or swipe to set up.
     </div>
 </div>
 
+<div id="settingsPanel">
+    <div id="settingsTitle">
+        Settings
+    </div>
+    <div id="volumePanel">
+        <div id="volumeTitle">Volume</div>
+    <div class="volumeBlock" id="volume6" style="top:50px"></div>
+    <div class="volumeBlock" id="volume5" style="top:100px"></div>
+    <div class="volumeBlock" id="volume4" style="top:150px"></div>
+    <div class="volumeBlock" id="volume3" style="top:200px"></div>
+    <div class="volumeBlock" id="volume2" style="top:250px"></div>
+    <div class="volumeBlock" id="volume1" style="top:300px"></div>
+    </div>
+
+    <div id="velocityPanel">
+        <div id="velocityTitle">Velocity</div>
+        <div class="velocityBlock" id="velocity6" style="top:50px"></div>
+        <div class="velocityBlock" id="velocity5" style="top:100px""></div>
+        <div class="velocityBlock" id="velocity4" style="top:150px"></div>
+        <div class="velocityBlock" id="velocity3" style="top:200px"></div>
+        <div class="velocityBlock" id="velocity2" style="top:250px"></div>
+        <div class="velocityBlock" id="velocity1" style="top:300px"></div>
+
+    </div>
+
+    <div id="levelPanel">
+        <div id="levelTitle">Level</div>
+        <div class="levelBlock" id="level6" style="top:50px"></div>
+        <div class="levelBlock" id="level5" style="top:100px"></div>
+    <div class="levelBlock" id="level4" style="top:150px"></div>
+    <div class="levelBlock" id="level3" style="top:200px"></div>
+    <div class="levelBlock" id="level2" style="top:250px"></div>
+    <div class="levelBlock" id="level1" style="top:300px"></div>
+
+    </div>
+
+
+
 </div>
+
 <script src='src\leap.js'></script>
 <script>
     Leap.loop({enableGestures: true}, function(frame)
     {
         frame.gestures.forEach(function(gesture) {
             if (gesture.type == "circle")
+            {
                 self.location = 'game.html';
+            }
+
+            if(gesture.type=="swipe")
+            {
+                $('#info').fadeOut(1000);
+                $('#settingsPanel').fadeIn(1000);
+
+                var position = frame.pointables[0].stabilizedTipPosition;
+                console.log(position);
+
+            }
 
         });
     });

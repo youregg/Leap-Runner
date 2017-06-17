@@ -48,12 +48,15 @@
 </div>
 <script src='src\leap.js'></script>
 <script>
-
     Leap.loop({enableGestures: true}, function(frame)
     {
         frame.gestures.forEach(function(gesture) {
             if (gesture.type == "circle")
                 self.location = 'game.html';
+            if(gesture.type=="swipe")
+            {
+
+            }
         });
     });
 </script>

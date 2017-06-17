@@ -308,22 +308,7 @@ function createPlayer()
             var position = frame.pointables[0].stabilizedTipPosition;
             gamePlayer.mesh.position.x=position[0];
             camera.rotation.z=gamePlayer.mesh.position.x*0.0002;
-            if(gamePlayer.mesh.position.x!=0)
-            {
-                this.vAngle +=50;
-                this.gamePlayer.mesh.position.y =120;
-                const legRotation = 20;
 
-                this.frontRightLeg.rotation.y = legRotation;
-                this.backRightLeg.rotation.y = legRotation;
-                this.frontLeftLeg.rotation.y = -legRotation;
-                this.backLeftLeg.rotation.y = -legRotation;
-
-                const earRotation = Math.sin(this.vAngle) * Math.PI / 3 + 1.5;
-
-                this.rightEar.rotation.z = earRotation;
-                this.leftEar.rotation.z = -earRotation;
-            }
         }
     });
     scene.add(gamePlayer.mesh);
@@ -447,8 +432,8 @@ var coin=function ()
     this.mesh.name="coin";
     this.mesh.position.y = 200;
 
-    const coinGeometry = new THREE.IcosahedronGeometry(17, 0);
-    const coinMaterial = new THREE.MeshPhongMaterial({color: Colors.pink});
+    const coinGeometry = new THREE.OctahedronGeometry(15);
+    const coinMaterial = new THREE.MeshPhongMaterial({color: Colors.red});
     var Coin = new THREE.Mesh(coinGeometry, coinMaterial);
     // body.position.y=100;
     Coin.castShadow = true;
@@ -502,7 +487,6 @@ function judgeDeath()
         });
     }
 }
-
 
 
 

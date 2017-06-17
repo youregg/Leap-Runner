@@ -19,8 +19,13 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;
 
-var fog=new THREE.Fog(0xffffff, 1000, 100000);
-scene.add(fog);
+var audio = document.createElement('audio');
+audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
+audio.autoplay='autoplay';
+audio.loop=true;
+document.body.appendChild(audio);
+
+
 
 //orbit control
 controls = new THREE.OrbitControls(camera,container);
@@ -131,19 +136,31 @@ plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.receiveShadow = true;
 
 
-/* TREE */
+
 for (var i = 0; i < 150; i += 1) {
     var x = getRandomInteger(-700, 700),
         z = getRandomInteger(-700, 700);
     scene.add(new Tree(x, z));
 }
 
-/* LIGHTS */
+
 sun = new Sun(20);
 directionalLight = new THREE.DirectionalLight(0x263238, 0.5);
 directionalLight.position.set(0, 1, 0);
 
 scene.add(sun);
 scene.add(plane);
+window.addEventListener('resize', handleWindowResize, false);//resize scene according to the window size
 
 render();
+
+function handleWindowResize() {
+    HEIGHT = window.innerHeight;
+    WIDTH = window.innerWidth;
+    windowHalfX = WIDTH / 2;
+    windowHalfY = HEIGHT / 2;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
+}
+

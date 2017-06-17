@@ -33,13 +33,13 @@ var gameGround;
 var Coin;
 var obstacleList=[];
 var collideMeshList=[];
-var coinGroup=[];
+var coinList=[];
 
 var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
 
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 0, 80, 200 );//create perspective camera
+camera.position.set( 0, 150, 200 );//create perspective camera
 scene.add(camera);
 
 var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.6);
@@ -77,22 +77,23 @@ var leapController= new Leap.Controller({enableGestures: true, frameEventName: '
 leapController.connect();
 
 var audio = document.createElement('audio');
-audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
+audio.src = "sound/Mili - NINE POINT EIGHT.mp3";
 audio.autoplay='autoplay';
 audio.loop=true;
 document.body.appendChild(audio);
 
-var audiocollide = document.createElement('audio');
-audiocollide.src = "sound/hit.mp3";
-audiocollide.preload="auto";
-function playhit() {
-    audiocollide.play();
+var audioCollide = document.createElement('audio');
+audioCollide.src = "sound/hit.mp3";
+audioCollide.preload="auto";
+function playHit()
+{
+    audioCollide.play();
 }
-var audiopoint = document.createElement('audio');
-audiopoint.src = "sound/point.mp3";
-audiopoint.preload="auto";
-function playpoint() {
-    audiopoint.play();
+var audioPoint = document.createElement('audio');
+audioPoint.src = "sound/point.mp3";
+audioPoint.preload="auto";
+function playPoint() {
+    audioPoint.play();
 }
 // 返回一个介于min和max之间的随机数
 function getRandomArbitrary(min, max)
@@ -126,7 +127,7 @@ var ground=function()
 
 
     var gameGround=new THREE.Mesh(geometry,material);
-    gameGround.position.y = -0.5;
+    gameGround.position.y = 0;
     gameGround.rotation.x = -Math.PI/2;
 
     this.mesh.add(gameGround);
@@ -161,6 +162,7 @@ createGround();
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 }*/
+
 var player=function() {
     this.mesh = new THREE.Group();
     this.mesh.name = "player";
@@ -409,19 +411,20 @@ function crashDetection()
         {
             crash=true;
             console.log("hit")
-            playhit();
+            playHit();
             score-=10;
             break;
         }
-        var coinResults = ray.intersectObjects( coinGroup );
+
+        var coinResults = ray.intersectObjects( coinList );
         if ( coinResults.length > 0 && coinResults[0].distance < directionVector.length() )
         {
             crash=true;
-            console.log("hit")
-            playpoint();
-            score+=10;
+            playPoint();
+            score+=20;
             break;
         }
+
         crash=false;
     }
 }
@@ -453,7 +456,7 @@ function createCoin(zcoin)
     Coin.mesh.position.y =gameGround.mesh.position.y+20;
     Coin.mesh.position.z = zcoin-500;
     scene.add(Coin.mesh);
-    coinGroup.push(Coin.mesh.children[0]);
+    coinList.push(Coin.mesh.children[0]);
 }
 
 
@@ -486,6 +489,19 @@ function judgeDeath()
             });
         });
     }
+}
+
+
+window.addEventListener('resize', handleWindowResize, false);
+
+function handleWindowResize() {
+    HEIGHT = window.innerHeight;
+    WIDTH = window.innerWidth;
+    windowHalfX = WIDTH / 2;
+    windowHalfY = HEIGHT / 2;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
 }
 
 

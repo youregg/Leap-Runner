@@ -30,9 +30,10 @@ var clock=new THREE.Clock();
 //all game modeels
 var gamePlayer;
 var gameGround;
-
+var Coin;
 var obstacleList=[];
 var collideMeshList=[];
+var coinGroup=[];
 
 var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
@@ -81,7 +82,18 @@ audio.autoplay='autoplay';
 audio.loop=true;
 document.body.appendChild(audio);
 
-
+var audiocollide = document.createElement('audio');
+audiocollide.src = "sound/hit.mp3";
+audiocollide.preload="auto";
+function playhit() {
+    audiocollide.play();
+}
+var audiopoint = document.createElement('audio');
+audiopoint.src = "sound/point.mp3";
+audiopoint.preload="auto";
+function playpoint() {
+    audiopoint.play();
+}
 // 返回一个介于min和max之间的随机数
 function getRandomArbitrary(min, max)
 {
@@ -133,7 +145,7 @@ function createGround()
 createGround();
 
 //player model
-var player=function()
+/*var player=function()
 {
     this.mesh = new THREE.Object3D();
     this.mesh.name = "player";
@@ -148,21 +160,170 @@ var player=function()
 
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
+}*/
+var player=function() {
+    this.mesh = new THREE.Group();
+    this.mesh.name = "player";
+    this.mesh.position.y = 100;
+    //drawBody()
+    const bodyGeometry = new THREE.IcosahedronGeometry(17, 0);
+    const bodyMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    // body.position.y=100;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    this.mesh.add(body);
+
+    //drawhead
+    const head = new THREE.Group();
+    head.position.set(0, 6.5, 16);
+    head.rotation.x = rad(-20);
+    this.mesh.add(head);
+
+    const foreheadGeometry = new THREE.BoxGeometry(7, 6, 7);
+    const foreheadMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffaf8b,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    const forehead = new THREE.Mesh(foreheadGeometry, foreheadMaterial);
+    forehead.castShadow = true;
+    forehead.receiveShadow = true;
+    forehead.position.y = -1.5;
+    head.add(forehead);
+
+    const faceGeometry = new THREE.CylinderGeometry(5, 1.5, 4, 40, 10);
+    const faceMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffaf8b,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    const face = new THREE.Mesh(faceGeometry, faceMaterial);
+    face.castShadow = true;
+    face.receiveShadow = true;
+    face.position.y = -6.5;
+    face.rotation.y = rad(45);
+    head.add(face);
+
+    const woolGeometry = new THREE.BoxGeometry(8.4, 4.6, 9);
+    const woolMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    const wool = new THREE.Mesh(woolGeometry, woolMaterial);
+    wool.position.set(0, 1.2, 0.7);
+    wool.rotation.x = rad(20);
+    head.add(wool);
+
+    const rightEyeGeometry = new THREE.CylinderGeometry(0.8, 1, 0.6, 60);
+    const rightEyeMaterial = new THREE.MeshPhongMaterial({
+        color: Colors.brownDark,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    const rightEye = new THREE.Mesh(rightEyeGeometry, rightEyeMaterial);
+    rightEye.castShadow = true;
+    rightEye.receiveShadow = true;
+    rightEye.position.set(3.5, -4.8, 3.3);
+    rightEye.rotation.set(rad(130.8), 0, rad(-45));
+    head.add(rightEye);
+
+    const leftEye = rightEye.clone();
+    leftEye.position.x = -rightEye.position.x;
+    leftEye.rotation.z = -rightEye.rotation.z;
+    head.add(leftEye);
+
+    const rightEarGeometry = new THREE.BoxGeometry(1.2, 5, 3);
+    const rightEarMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffaf8b,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    rightEarGeometry.translate(0, -2.5, 0);
+    this.rightEar = new THREE.Mesh(rightEarGeometry, rightEarMaterial);
+    this.rightEar.castShadow = true;
+    this.rightEar.receiveShadow = true;
+    this.rightEar.position.set(3.5, -1.2, -0.7);
+    this.rightEar.rotation.set(rad(20), 0, rad(50));
+    head.add(this.rightEar);
+
+    this.leftEar = this.rightEar.clone();
+    this.leftEar.position.x = -this.rightEar.position.x;
+    this.leftEar.rotation.z = -this.rightEar.rotation.z;
+    head.add(this.leftEar);
+
+    const legGeometry = new THREE.CylinderGeometry(3, 1.5, 10, 40);
+    const legEarMaterial = new THREE.MeshPhongMaterial({
+        color: 0x4b4553,
+        roughness: 1,
+        shading: THREE.FlatShading
+    });
+    legGeometry.translate(0, -5, 0);
+    this.frontRightLeg = new THREE.Mesh(legGeometry, legEarMaterial);
+    this.frontRightLeg.castShadow = true;
+    this.frontRightLeg.receiveShadow = true;
+    this.frontRightLeg.position.set(7, -8, 5);
+    this.frontRightLeg.rotation.x = rad(-12);
+    this.mesh.add(this.frontRightLeg);
+
+    this.frontLeftLeg = this.frontRightLeg.clone();
+    this.frontLeftLeg.position.x = -this.frontRightLeg.position.x;
+    this.frontLeftLeg.rotation.z = -this.frontRightLeg.rotation.z;
+    this.mesh.add(this.frontLeftLeg);
+
+    this.backRightLeg = this.frontRightLeg.clone();
+    this.backRightLeg.position.z = -this.frontRightLeg.position.z;
+    this.backRightLeg.rotation.x = -this.frontRightLeg.rotation.x;
+    this.mesh.add(this.backRightLeg);
+
+    this.backLeftLeg = this.frontLeftLeg.clone();
+    this.backLeftLeg.position.z = -this.frontLeftLeg.position.z;
+    this.backLeftLeg.rotation.x = -this.frontLeftLeg.rotation.x;
+    this.mesh.add(this.backLeftLeg);
+
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+
 }
+
+function rad(degrees) {
+    return degrees * (Math.PI / 180);
+}
+
 
 function createPlayer()
 {
     gamePlayer=new player();
-    gamePlayer.mesh.scale.set(.30,.30,.30);
+    gamePlayer.mesh.scale.set(.80,.80,.80);
 
     gamePlayer.mesh.position.y=gameGround.mesh.position.y+20;
-
     leapController.loop(function(frame)
     {
         if (frame.pointables.length > 0) {
             var position = frame.pointables[0].stabilizedTipPosition;
             gamePlayer.mesh.position.x=position[0];
-            camera.rotation.z=gamePlayer.mesh.position.x*0.0005;
+            camera.rotation.z=gamePlayer.mesh.position.x*0.0002;
+            if(gamePlayer.mesh.position.x!=0)
+            {
+                this.vAngle +=50;
+                this.gamePlayer.mesh.position.y =120;
+                const legRotation = 20;
+
+                this.frontRightLeg.rotation.y = legRotation;
+                this.backRightLeg.rotation.y = legRotation;
+                this.frontLeftLeg.rotation.y = -legRotation;
+                this.backLeftLeg.rotation.y = -legRotation;
+
+                const earRotation = Math.sin(this.vAngle) * Math.PI / 3 + 1.5;
+
+                this.rightEar.rotation.z = earRotation;
+                this.leftEar.rotation.z = -earRotation;
+            }
         }
     });
     scene.add(gamePlayer.mesh);
@@ -215,26 +376,34 @@ function createObstacles(zScale)
 
 function update()
 {
-    var delta = clock.getDelta();
-    var unitScore=10;
+    if(score>=0) {
+        var delta = clock.getDelta();
+        var unitScore = 10;
+        gamePlayer.mesh.rotation.y = gameGround.mesh.position.y + 15;
+        var moveDistance = speed * delta;
 
-    var moveDistance=speed*delta;
+        distance += moveDistance;
 
-    distance+=moveDistance;
+        gamePlayer.mesh.position.z -= moveDistance * 0.8;
+        if (Math.random() < 0.03) {
+            createObstacles(gamePlayer.mesh.position.z);
+        }
+        if (Math.random() < 0.01) {
+            createCoin(gamePlayer.mesh.position.z);
+        }
+        crashDetection();
+        camera.position.z = gamePlayer.mesh.position.z + 200;
 
-    gamePlayer.mesh.position.z-=moveDistance*0.8;
-    if(Math.random()<0.03)
-    {
-        createObstacles(gamePlayer.mesh.position.z);
+        gameGround.mesh.position.z = gamePlayer.mesh.position.z;
+        document.getElementById('score').innerHTML = "Score: " + score.toFixed(0);
+        document.getElementById('distance').innerHTML = "Distance: " + distance.toFixed(0);
     }
-    crashDetection();
-    camera.position.z =gamePlayer.mesh.position.z+200;
-
-    gameGround.mesh.position.z=gamePlayer.mesh.position.z;
-    document.getElementById('score').innerHTML="Score: "+score.toFixed(0);
-    document.getElementById('distance').innerHTML="Distance: "+distance.toFixed(0);
-
-
+    if(score<0)
+    {
+        dead=true;
+        judgeDeath();
+        camera.position.set( 0, 100, 200 );
+    }
 }
 
 render();
@@ -255,14 +424,51 @@ function crashDetection()
         {
             crash=true;
             console.log("hit")
+            playhit();
             score-=10;
             break;
-
+        }
+        var coinResults = ray.intersectObjects( coinGroup );
+        if ( coinResults.length > 0 && coinResults[0].distance < directionVector.length() )
+        {
+            crash=true;
+            console.log("hit")
+            playpoint();
+            score+=10;
+            break;
         }
         crash=false;
-
     }
+}
 
+var coin=function ()
+{
+    this.mesh = new THREE.Object3D();
+    this.mesh.name="coin";
+    this.mesh.position.y = 200;
+
+    const coinGeometry = new THREE.IcosahedronGeometry(17, 0);
+    const coinMaterial = new THREE.MeshPhongMaterial({color: Colors.pink});
+    var Coin = new THREE.Mesh(coinGeometry, coinMaterial);
+    // body.position.y=100;
+    Coin.castShadow = true;
+    Coin.receiveShadow = true;
+    this.mesh.add(Coin);
+
+}
+
+
+function createCoin(zcoin)
+{
+    var a = 1 * 50,
+        b = getRandomInt(1, 3) * 50,
+        c = 1 * 50;
+    Coin = new coin();
+    Coin.mesh.position.x = getRandomArbitrary(-400, 400);
+    Coin.mesh.position.y =gameGround.mesh.position.y+20;
+    Coin.mesh.position.z = zcoin-500;
+    scene.add(Coin.mesh);
+    coinGroup.push(Coin.mesh.children[0]);
 }
 
 
@@ -287,10 +493,15 @@ function judgeDeath()
     if(dead==true)
     {
         $('#deadScene').css('display','block');
+        Leap.loop({enableGestures: true}, function(frame)
+        {
+            frame.gestures.forEach(function(gesture) {
+                if (gesture.type == "swipe")
+                    self.location = 'game.html';
+            });
+        });
     }
 }
-
-
 
 
 

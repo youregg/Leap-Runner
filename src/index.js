@@ -408,7 +408,6 @@ function crashDetection()
             break;
         }
 
-        console.log(coinList);
         var coinResults = ray.intersectObjects(coinList);
         if ( coinResults.length > 0 && coinResults[0].distance < directionVector.length() )
         {

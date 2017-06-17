@@ -10,36 +10,24 @@ var Colors = {
 
 };
 
-//game info
+//game basic information
 var score=0;//current score
-
-var life=5;//player's life left,game end when decreased to 0
-
-var difficulty=1;//difficult level
-var volume=50;//background music volume
 var distance=0;
-
-var obstacleCount=10;
 var speed=400;
-
-
 var dead=false;
 var crash=false;
-var clock=new THREE.Clock();
+var clock=new THREE.Clock();//record time
 
-//all game modeels
+//all game models
 var gamePlayer;
 var gameGround;
-var Coin;
-var obstacleList=[];
-var collideMeshList=[];
+var collideList=[];
 var coinList=[];
-
 var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
 
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 0, 150, 200 );//create perspective camera
+camera.position.set( 0, 100, 200 );//create perspective camera
 scene.add(camera);
 
 var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.6);
@@ -52,8 +40,6 @@ centerLight.position.y = 500;
 scene.add(centerLight);
 
 scene.fog=new THREE.Fog(0x061837, 10, 950);
-
-
 
 
 var renderer=new THREE.WebGLRenderer({
@@ -72,10 +58,11 @@ orbitControl.target = new THREE.Vector3(0,15,0);
 orbitControl.maxPolarAngle = Math.PI / 2;
 orbitControl.addEventListener( 'change', function() { renderer.render(scene, camera)});
 
-//controll to the leap motion device
+//connect to the leap motion device
 var leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
 leapController.connect();
 
+//initialize game audio
 var audio = document.createElement('audio');
 audio.src = "sound/Mili - NINE POINT EIGHT.mp3";
 audio.autoplay='autoplay';
@@ -85,16 +72,21 @@ document.body.appendChild(audio);
 var audioCollide = document.createElement('audio');
 audioCollide.src = "sound/hit.mp3";
 audioCollide.preload="auto";
-function playHit()
+
+function playCollide()
 {
     audioCollide.play();
 }
+
 var audioPoint = document.createElement('audio');
 audioPoint.src = "sound/point.mp3";
 audioPoint.preload="auto";
-function playPoint() {
+
+function playScore()
+{
     audioPoint.play();
 }
+
 // 返回一个介于min和max之间的随机数
 function getRandomArbitrary(min, max)
 {
@@ -114,6 +106,7 @@ function render()
     renderer.render( scene, camera );
 }
 
+//game ground model
 var ground=function()
 {
     this.mesh=new THREE.Object3D();
@@ -142,7 +135,6 @@ function createGround()
     scene.add(gameGround.mesh);
 
 }
-
 createGround();
 
 //player model
@@ -162,6 +154,7 @@ createGround();
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 }*/
+
 
 var player=function() {
     this.mesh = new THREE.Group();
@@ -346,24 +339,20 @@ var tree=function()
 
 function createObstacles(zScale)
 {
-
-    var a = 1 * 50,
-        b = getRandomInt(1, 3) * 50,
-        c = 1 * 50;
-
     var myTree=new tree();
-    myTree.mesh.position.x = getRandomArbitrary(-400, 400);
+    myTree.mesh.position.x = getRandomArbitrary(-450, 450);
     myTree.mesh.position.y = gameGround.mesh.position.y+20;
     myTree.mesh.position.z = zScale-500;
     scene.add(myTree.mesh);
-    collideMeshList.push(myTree.mesh.children[1]);
+    collideList.push(myTree.mesh.children[1]);
 
 }
 
 
 function update()
 {
-    if(score>=0) {
+    if(score>=0)
+    {
         var delta = clock.getDelta();
         var unitScore = 10;
         gamePlayer.mesh.rotation.y = gameGround.mesh.position.y + 15;
@@ -372,7 +361,9 @@ function update()
         distance += moveDistance;
 
         gamePlayer.mesh.position.z -= moveDistance * 0.8;
-        if (Math.random() < 0.03) {
+
+        if (Math.random() < 0.03)
+        {
             createObstacles(gamePlayer.mesh.position.z);
         }
         if (Math.random() < 0.01) {
@@ -385,6 +376,7 @@ function update()
         document.getElementById('score').innerHTML = "Score: " + score.toFixed(0);
         document.getElementById('distance').innerHTML = "Distance: " + distance.toFixed(0);
     }
+
     if(score<0)
     {
         dead=true;
@@ -406,21 +398,21 @@ function crashDetection()
         var directionVector = globalVertex.sub( gamePlayer.mesh.position );
 
         var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
-        var collisionResults = ray.intersectObjects( collideMeshList );
+        var collisionResults = ray.intersectObjects( collideList );
         if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )
         {
             crash=true;
             console.log("hit")
-            playHit();
+            playCollide();
             score-=10;
             break;
         }
 
-        var coinResults = ray.intersectObjects( coinList );
+        console.log(coinList);
+        var coinResults = ray.intersectObjects(coinList);
         if ( coinResults.length > 0 && coinResults[0].distance < directionVector.length() )
         {
-            crash=true;
-            playPoint();
+            playScore();
             score+=20;
             break;
         }
@@ -435,28 +427,25 @@ var coin=function ()
     this.mesh.name="coin";
     this.mesh.position.y = 200;
 
-    const coinGeometry = new THREE.OctahedronGeometry(15);
-    const coinMaterial = new THREE.MeshPhongMaterial({color: Colors.red});
-    var Coin = new THREE.Mesh(coinGeometry, coinMaterial);
+    const geometry = new THREE.OctahedronGeometry(15);
+    const material = new THREE.MeshPhongMaterial({color: Colors.red});
+    var gameCoin = new THREE.Mesh(geometry, material);
     // body.position.y=100;
-    Coin.castShadow = true;
-    Coin.receiveShadow = true;
-    this.mesh.add(Coin);
+    gameCoin.castShadow = true;
+    gameCoin.receiveShadow = true;
+    this.mesh.add(gameCoin);
 
 }
 
 
-function createCoin(zcoin)
+function createCoin(zscale)
 {
-    var a = 1 * 50,
-        b = getRandomInt(1, 3) * 50,
-        c = 1 * 50;
-    Coin = new coin();
-    Coin.mesh.position.x = getRandomArbitrary(-400, 400);
-    Coin.mesh.position.y =gameGround.mesh.position.y+20;
-    Coin.mesh.position.z = zcoin-500;
-    scene.add(Coin.mesh);
-    coinList.push(Coin.mesh.children[0]);
+    var gameCoin = new coin();
+    gameCoin.mesh.position.x = getRandomArbitrary(-400, 400);
+    gameCoin.mesh.position.y =gameGround.mesh.position.y+20;
+    gameCoin.mesh.position.z = zscale-500;
+    scene.add(gameCoin.mesh);
+    coinList.push(gameCoin.mesh.children[0]);
 }
 
 

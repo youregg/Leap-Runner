@@ -3757,7 +3757,7 @@ EventEmitter.prototype.emit = function(type) {
   }
 };
 
-// EventEmitter is defined in src/node_events.cc
+// EventEmitter is defined in script/node_events.cc
 // EventEmitter.prototype.emit() is also defined there.
 EventEmitter.prototype.addListener = function(type, listener) {
   if ('function' !== typeof listener) {

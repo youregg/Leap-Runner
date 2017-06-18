@@ -174,148 +174,152 @@ Leap.loop({enableGestures:true},function(frame)
         //if gesture is swipe then go to settings panel
         if(gesture.type=="swipe")
         {
-            $('#info').fadeOut(1000);
+            $('#infoPanel').fadeOut(1000);
             $('#settingsPanel').fadeIn(1000);
 
-            var pointables=frame.pointables[0];//get the first detected finger
-            var position=pointables.stabilizedTipPosition;//get finger position
-            console.log(position[1]);
-
-            //Control Sound
-
-            if(position[0]<0)//selecting backgroundAudio volume
+            if (frame.pointables.length > 0)
             {
-                $('#volumeTitle').css('color','darkseagreen');
-                if(position[1]<=30)
-                {
-                    $('#volume1').css('background-color','white');
-                    $('#volume2').css('background-color','darkseagreen');
-                    $('#volume3').css('background-color','darkseagreen');
-                    $('#volume4').css('background-color','darkseagreen');
-                    $('#volume5').css('background-color','darkseagreen');
-                    $('#volume6').css('background-color','darkseagreen');
+                var pointables=frame.pointables[0];//get the first detected finger
+                var position=pointables.stabilizedTipPosition;//get finger position
+                console.log(position[1]);
 
-                    backgroundAudio.volume = 0;
+                //Control Sound
 
-                }
-                else if(position[1]>30&&position[1]<=60)
+                if(position[0]<0)//selecting backgroundAudio volume
                 {
-                    $('#volume1').css('background-color','white');
-                    $('#volume2').css('background-color','white');
-                    $('#volume3').css('background-color','darkseagreen');
-                    $('#volume4').css('background-color','darkseagreen');
-                    $('#volume5').css('background-color','darkseagreen');
-                    $('#volume6').css('background-color','darkseagreen');
-                    backgroundAudio.volume = 0.25;
-                }
-                else if(position[1]>90&&position[1]<=120)
-                {
-                    $('#volume1').css('background-color','white');
-                    $('#volume2').css('background-color','white');
-                    $('#volume3').css('background-color','white');
-                    $('#volume4').css('background-color','darkseagreen');
-                    $('#volume5').css('background-color','darkseagreen');
-                    $('#volume6').css('background-color','darkseagreen');
-                    backgroundAudio.volume = 0.5;
-                }
-                else if(position[1]>120&&position[1]<=130)
-                {
-                    $('#volume1').css('background-color','white');
-                    $('#volume2').css('background-color','white');
-                    $('#volume3').css('background-color','white');
-                    $('#volume4').css('background-color','white');
-                    $('#volume5').css('background-color','darkseagreen');
-                    $('#volume6').css('background-color','darkseagreen');
-                    backgroundAudio.volume = 0.75;
+                    $('#volumeTitle').css('color','darkseagreen');
+                    if(position[1]<=30)
+                    {
+                        $('#volume1').css('background-color','white');
+                        $('#volume2').css('background-color','darkseagreen');
+                        $('#volume3').css('background-color','darkseagreen');
+                        $('#volume4').css('background-color','darkseagreen');
+                        $('#volume5').css('background-color','darkseagreen');
+                        $('#volume6').css('background-color','darkseagreen');
 
-                }
-                else if(position[1]>130&&position[1]<=160)
-                {
-                    $('#volume1').css('background-color','white');
-                    $('#volume2').css('background-color','white');
-                    $('#volume3').css('background-color','white');
-                    $('#volume4').css('background-color','white');
-                    $('#volume5').css('background-color','white');
-                    $('#volume6').css('background-color','darkseagreen');
-                    backgroundAudio.volume = 0.95;
-                }
-                else if(position[1]>160)
-                {
-                    $('#volume1').css('background-color','white');
-                    $('#volume2').css('background-color','white');
-                    $('#volume3').css('background-color','white');
-                    $('#volume4').css('background-color','white');
-                    $('#volume5').css('background-color','white');
-                    $('#volume6').css('background-color','white');
-                    backgroundAudio.volume = 1.;
-                }
-            }
+                        backgroundAudio.volume = 0;
 
-            else if(position[0]>100)//set level
-            {
-                $('#levelTitle').css('color','cadetblue');
-                var pointables = frame.pointables[0];//get the first detected finger
-                var position = pointables.stabilizedTipPosition;//get finger position
+                    }
+                    else if(position[1]>30&&position[1]<=60)
+                    {
+                        $('#volume1').css('background-color','white');
+                        $('#volume2').css('background-color','white');
+                        $('#volume3').css('background-color','darkseagreen');
+                        $('#volume4').css('background-color','darkseagreen');
+                        $('#volume5').css('background-color','darkseagreen');
+                        $('#volume6').css('background-color','darkseagreen');
+                        backgroundAudio.volume = 0.25;
+                    }
+                    else if(position[1]>90&&position[1]<=120)
+                    {
+                        $('#volume1').css('background-color','white');
+                        $('#volume2').css('background-color','white');
+                        $('#volume3').css('background-color','white');
+                        $('#volume4').css('background-color','darkseagreen');
+                        $('#volume5').css('background-color','darkseagreen');
+                        $('#volume6').css('background-color','darkseagreen');
+                        backgroundAudio.volume = 0.5;
+                    }
+                    else if(position[1]>120&&position[1]<=130)
+                    {
+                        $('#volume1').css('background-color','white');
+                        $('#volume2').css('background-color','white');
+                        $('#volume3').css('background-color','white');
+                        $('#volume4').css('background-color','white');
+                        $('#volume5').css('background-color','darkseagreen');
+                        $('#volume6').css('background-color','darkseagreen');
+                        backgroundAudio.volume = 0.75;
 
-                console.log(position[1])
+                    }
+                    else if(position[1]>130&&position[1]<=160)
+                    {
+                        $('#volume1').css('background-color','white');
+                        $('#volume2').css('background-color','white');
+                        $('#volume3').css('background-color','white');
+                        $('#volume4').css('background-color','white');
+                        $('#volume5').css('background-color','white');
+                        $('#volume6').css('background-color','darkseagreen');
+                        backgroundAudio.volume = 0.95;
+                    }
+                    else if(position[1]>160)
+                    {
+                        $('#volume1').css('background-color','white');
+                        $('#volume2').css('background-color','white');
+                        $('#volume3').css('background-color','white');
+                        $('#volume4').css('background-color','white');
+                        $('#volume5').css('background-color','white');
+                        $('#volume6').css('background-color','white');
+                        backgroundAudio.volume = 1.;
+                    }
+                }
 
-                if (position[1] <= 30)
+                else if(position[0]>100)//set level
                 {
-                    $('#level1').css('background-color', 'white');
-                    $('#level2').css('background-color', 'cadetblue');
-                    $('#level3').css('background-color', 'cadetblue');
-                    $('#level4').css('background-color', 'cadetblue');
-                    $('#level5').css('background-color', 'cadetblue');
-                    $('#level6').css('background-color', 'cadetblue');
-                }
-                else if (position[1] > 30 && position[1] <= 60)
-                {
-                    $('#level1').css('background-color', 'white');
-                    $('#level2').css('background-color', 'white');
-                    $('#level3').css('background-color', 'cadetblue');
-                    $('#level4').css('background-color', 'cadetblue');
-                    $('#level5').css('background-color', 'cadetblue');
-                    $('#level6').css('background-color', 'cadetblue');
-                }
-                else if (position[1] > 90 && position[1] <= 120)
-                {
-                    $('#level1').css('background-color', 'white');
-                    $('#level2').css('background-color', 'white');
-                    $('#level3').css('background-color', 'white');
-                    $('#level4').css('background-color', 'cadetblue');
-                    $('#level5').css('background-color', 'cadetblue');
-                    $('#level6').css('background-color', 'cadetblue');
-                }
-                else if (position[1] > 120 && position[1] <= 130)
-                {
-                    $('#level1').css('background-color', 'white');
-                    $('#level2').css('background-color', 'white');
-                    $('#level3').css('background-color', 'white');
-                    $('#level4').css('background-color', 'white');
-                    $('#level5').css('background-color', 'cadetblue');
-                    $('#level6').css('background-color', 'cadetblue');
+                    $('#levelTitle').css('color','cadetblue');
+                    var pointables = frame.pointables[0];//get the first detected finger
+                    var position = pointables.stabilizedTipPosition;//get finger position
 
-                }
-                else if (position[1] > 130 && position[1] <= 160)
-                {
-                    $('#level1').css('background-color', 'white');
-                    $('#level2').css('background-color', 'white');
-                    $('#level3').css('background-color', 'white');
-                    $('#level4').css('background-color', 'white');
-                    $('#level5').css('background-color', 'white');
-                    $('#level6').css('background-color', 'cadetblue');
-                }
-                else if (position[1] > 160)
-                {
-                    $('#level1').css('background-color', 'white');
-                    $('#level2').css('background-color', 'white');
-                    $('#level3').css('background-color', 'white');
-                    $('#level4').css('background-color', 'white');
-                    $('#level5').css('background-color', 'white');
-                    $('#level6').css('background-color', 'white');
+                    console.log(position[1])
+
+                    if (position[1] <= 30)
+                    {
+                        $('#level1').css('background-color', 'white');
+                        $('#level2').css('background-color', 'cadetblue');
+                        $('#level3').css('background-color', 'cadetblue');
+                        $('#level4').css('background-color', 'cadetblue');
+                        $('#level5').css('background-color', 'cadetblue');
+                        $('#level6').css('background-color', 'cadetblue');
+                    }
+                    else if (position[1] > 30 && position[1] <= 60)
+                    {
+                        $('#level1').css('background-color', 'white');
+                        $('#level2').css('background-color', 'white');
+                        $('#level3').css('background-color', 'cadetblue');
+                        $('#level4').css('background-color', 'cadetblue');
+                        $('#level5').css('background-color', 'cadetblue');
+                        $('#level6').css('background-color', 'cadetblue');
+                    }
+                    else if (position[1] > 90 && position[1] <= 120)
+                    {
+                        $('#level1').css('background-color', 'white');
+                        $('#level2').css('background-color', 'white');
+                        $('#level3').css('background-color', 'white');
+                        $('#level4').css('background-color', 'cadetblue');
+                        $('#level5').css('background-color', 'cadetblue');
+                        $('#level6').css('background-color', 'cadetblue');
+                    }
+                    else if (position[1] > 120 && position[1] <= 130)
+                    {
+                        $('#level1').css('background-color', 'white');
+                        $('#level2').css('background-color', 'white');
+                        $('#level3').css('background-color', 'white');
+                        $('#level4').css('background-color', 'white');
+                        $('#level5').css('background-color', 'cadetblue');
+                        $('#level6').css('background-color', 'cadetblue');
+
+                    }
+                    else if (position[1] > 130 && position[1] <= 160)
+                    {
+                        $('#level1').css('background-color', 'white');
+                        $('#level2').css('background-color', 'white');
+                        $('#level3').css('background-color', 'white');
+                        $('#level4').css('background-color', 'white');
+                        $('#level5').css('background-color', 'white');
+                        $('#level6').css('background-color', 'cadetblue');
+                    }
+                    else if (position[1] > 160)
+                    {
+                        $('#level1').css('background-color', 'white');
+                        $('#level2').css('background-color', 'white');
+                        $('#level3').css('background-color', 'white');
+                        $('#level4').css('background-color', 'white');
+                        $('#level5').css('background-color', 'white');
+                        $('#level6').css('background-color', 'white');
+                    }
                 }
             }
         }
+
 
     })
 })

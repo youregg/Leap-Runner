@@ -36,11 +36,10 @@
     position:absolute;
     width:100%;
     background-color: aliceblue;
-    opacity: 0.5;
+    opacity: 0.9;
     top:15vh;
     left:0px;
     height:500px;
-    opacity: 0.9;
     font-family: "Apple LiGothic";
     font-weight: lighter;
     display: none;

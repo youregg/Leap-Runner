@@ -13,7 +13,33 @@ var gameGround;
 var collideList=[];
 var coinList=[];
 var container=document.getElementById('gameContainer');//get game container
-var scene=new THREE.Scene();//create game scene
+var scene =new THREE.Scene();//create game scene
+
+//initialize game backgroundAudio
+var audio = document.createElement('audio');
+audio.src = "sound/Mili - NINE POINT EIGHT.mp3";
+audio.autoplay='autoplay';
+audio.loop=true;
+document.body.appendChild(audio);
+
+
+var audioCollide = document.createElement('audio');
+audioCollide.src = "sound/hit.mp3";
+audioCollide.preload="auto";
+
+function playCollide()
+{
+    audioCollide.play();
+}
+
+var audioPoint = document.createElement('audio');
+audioPoint.src = "sound/point.mp3";
+audioPoint.preload="auto";
+
+function playScore()
+{
+    audioPoint.play();
+}
 
 //create camera
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -48,33 +74,6 @@ renderer.setClearColor(0x061837, 1);
 //connect to the leap motion device
 var leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
 leapController.connect();
-
-//initialize game backgroundAudio
-var audio = document.createElement('audio');
-audio.src = "sound/Mili - NINE POINT EIGHT.mp3";
-audio.autoplay='autoplay';
-audio.loop=true;
-document.body.appendChild(audio);
-
-
-var audioCollide = document.createElement('audio');
-audioCollide.src = "sound/hit.mp3";
-audioCollide.preload="auto";
-
-function playCollide()
-{
-    audioCollide.play();
-}
-
-var audioPoint = document.createElement('audio');
-audioPoint.src = "sound/point.mp3";
-audioPoint.preload="auto";
-
-function playScore()
-{
-    audioPoint.play();
-}
-
 
 //add snow particles
 var textureLoader = new THREE.TextureLoader();
@@ -379,7 +378,7 @@ function judgeDeath()
     if(dead==true)
     {
         $('#deadScene').css('display','block');
-        Leap.loop({enableGestures: true}, function(frame)
+        leapController.loop({enableGestures: true}, function(frame)
         {
             frame.gestures.forEach(function(gesture) {
                 if (gesture.type == "swipe")//swipe to restart

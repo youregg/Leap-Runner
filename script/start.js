@@ -19,7 +19,7 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;
 
-var backgroundAudio = document.createElement('backgroundAudio');
+var backgroundAudio = document.createElement('audio');
 backgroundAudio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
 backgroundAudio.autoplay='autoplay';
 document.body.appendChild(backgroundAudio);
@@ -172,7 +172,7 @@ Leap.loop({enableGestures:true},function(frame)
         }
 
         //if gesture is swipe then go to settings panel
-        else if(gesture.type=="swipe")
+        if(gesture.type=="swipe")
         {
             $('#info').fadeOut(1000);
             $('#settingsPanel').fadeIn(1000);

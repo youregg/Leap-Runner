@@ -49,14 +49,15 @@ renderer.setClearColor(0x061837, 1);
 var leapController= new Leap.Controller({enableGestures: true, frameEventName: 'deviceFrame'});
 leapController.connect();
 
-//initialize game audio
-var audio = document.createElement('audio');
+//initialize game backgroundAudio
+var audio = document.createElement('backgroundAudio');
 audio.src = "sound/Mili - NINE POINT EIGHT.mp3";
 audio.autoplay='autoplay';
 audio.loop=true;
 document.body.appendChild(audio);
 
-var audioCollide = document.createElement('audio');
+
+var audioCollide = document.createElement('backgroundAudio');
 audioCollide.src = "sound/hit.mp3";
 audioCollide.preload="auto";
 
@@ -65,7 +66,7 @@ function playCollide()
     audioCollide.play();
 }
 
-var audioPoint = document.createElement('audio');
+var audioPoint = document.createElement('backgroundAudio');
 audioPoint.src = "sound/point.mp3";
 audioPoint.preload="auto";
 

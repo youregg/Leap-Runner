@@ -19,11 +19,11 @@ renderer.setSize(window.innerWidth,window.innerHeight);
 container.appendChild(renderer.domElement);
 renderer.shadowMapEnabled=true;
 
-var audio = document.createElement('audio');
-audio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
-audio.autoplay='autoplay';
-audio.loop=true;
-document.body.appendChild(audio);
+var backgroundAudio = document.createElement('backgroundAudio');
+backgroundAudio.src = "sound/Kan R. Gao - For River - Piano (Johnny's Version).mp3";
+backgroundAudio.autoplay='autoplay';
+document.body.appendChild(backgroundAudio);
+
 
 //orbit control
 controls = new THREE.OrbitControls(camera,container);
@@ -123,8 +123,6 @@ function Sun(radius)
     return sun;
 }
 
-THREE.ImageUtils.crossOrigin = '';
-
 //create game ground
 var planeGeometry = new THREE.CylinderGeometry(1000, 1000, 1, 100);
 planeMaterial = new THREE.MeshLambertMaterial({
@@ -185,7 +183,7 @@ Leap.loop({enableGestures:true},function(frame)
 
             //Control Sound
 
-            if(position[0]<0)//selecting audio volume
+            if(position[0]<0)//selecting backgroundAudio volume
             {
                 $('#volumeTitle').css('color','darkseagreen');
                 if(position[1]<=30)
@@ -197,7 +195,7 @@ Leap.loop({enableGestures:true},function(frame)
                     $('#volume5').css('background-color','darkseagreen');
                     $('#volume6').css('background-color','darkseagreen');
 
-                    audio.volume = 0;
+                    backgroundAudio.volume = 0;
 
                 }
                 else if(position[1]>30&&position[1]<=60)
@@ -208,7 +206,7 @@ Leap.loop({enableGestures:true},function(frame)
                     $('#volume4').css('background-color','darkseagreen');
                     $('#volume5').css('background-color','darkseagreen');
                     $('#volume6').css('background-color','darkseagreen');
-                    audio.volume = 0.25;
+                    backgroundAudio.volume = 0.25;
                 }
                 else if(position[1]>90&&position[1]<=120)
                 {
@@ -218,7 +216,7 @@ Leap.loop({enableGestures:true},function(frame)
                     $('#volume4').css('background-color','darkseagreen');
                     $('#volume5').css('background-color','darkseagreen');
                     $('#volume6').css('background-color','darkseagreen');
-                    audio.volume = 0.5;
+                    backgroundAudio.volume = 0.5;
                 }
                 else if(position[1]>120&&position[1]<=130)
                 {
@@ -228,7 +226,7 @@ Leap.loop({enableGestures:true},function(frame)
                     $('#volume4').css('background-color','white');
                     $('#volume5').css('background-color','darkseagreen');
                     $('#volume6').css('background-color','darkseagreen');
-                    audio.volume = 0.75;
+                    backgroundAudio.volume = 0.75;
 
                 }
                 else if(position[1]>130&&position[1]<=160)
@@ -239,7 +237,7 @@ Leap.loop({enableGestures:true},function(frame)
                     $('#volume4').css('background-color','white');
                     $('#volume5').css('background-color','white');
                     $('#volume6').css('background-color','darkseagreen');
-                    audio.volume = 0.95;
+                    backgroundAudio.volume = 0.95;
                 }
                 else if(position[1]>160)
                 {
@@ -249,7 +247,7 @@ Leap.loop({enableGestures:true},function(frame)
                     $('#volume4').css('background-color','white');
                     $('#volume5').css('background-color','white');
                     $('#volume6').css('background-color','white');
-                    audio.volume = 1.;
+                    backgroundAudio.volume = 1.;
                 }
             }
 
@@ -321,4 +319,5 @@ Leap.loop({enableGestures:true},function(frame)
 
     })
 })
+
 

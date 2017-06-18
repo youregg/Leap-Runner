@@ -335,12 +335,16 @@ function crashDetection()
 
     for (var vertexIndex = 0; vertexIndex < gamePlayer.mesh.children[0].geometry.vertices.length; vertexIndex++)
     {
-        var localVertex = gamePlayer.mesh.children[0].geometry.vertices[vertexIndex].clone();
-        var globalVertex = localVertex.applyMatrix4( gamePlayer.mesh.matrix );
-        var directionVector = globalVertex.sub( gamePlayer.mesh.position );
+        var localVertex = gamePlayer.mesh.children[0].geometry.vertices[vertexIndex].clone();//vertex original position
 
-        var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+        var globalVertex = localVertex.applyMatrix4( gamePlayer.mesh.matrix );//transformed position
+
+        var directionVector = globalVertex.sub( gamePlayer.mesh.position );//vector from player object center to player vertex
+
+        var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize());//initialize direction vector
+
         var collisionResults = ray.intersectObjects( collideList );
+
         if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )
         {
             crash=true;

@@ -49,6 +49,7 @@ function render()
     controls.update();
 }
 
+//get a random integer between min and max
 function getRandomInteger(min, max)
 {
     return Math.floor(Math.random()*(max-min+1))+min;
@@ -61,7 +62,6 @@ function getRandomGauss(median, variance, cove)
 
 function Tree(x, z)
 {
-
     var crownHeight = getRandomGauss(60, 800, 5);
     var crownWidth = crownHeight * (Math.random() * 0.21 + 0.3);
     var stemHeight = crownHeight * 0.25;
@@ -89,7 +89,8 @@ function Tree(x, z)
     return cone;
 }
 
-function Sun(radius) {
+function Sun(radius)
+{
     var pointLight = {},
         pointLightHelper = {},
         spotlight = {},
@@ -124,17 +125,16 @@ function Sun(radius) {
 
 THREE.ImageUtils.crossOrigin = '';
 
-
-planeGeometry = new THREE.CylinderGeometry(1000, 1000, 1, 100);
+//create game ground
+var planeGeometry = new THREE.CylinderGeometry(1000, 1000, 1, 100);
 planeMaterial = new THREE.MeshLambertMaterial({
     color: 0xa6bcc5
 });
 plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.receiveShadow = true;
 
-
-
-for (var i = 0; i < 150; i += 1) {
+for (var i = 0; i < 150; i += 1)
+{
     var x = getRandomInteger(-700, 700),
         z = getRandomInteger(-700, 700);
     scene.add(new Tree(x, z));
@@ -151,11 +151,12 @@ window.addEventListener('resize', handleWindowResize, false);//resize scene acco
 
 render();
 
-function handleWindowResize() {
-    HEIGHT = window.innerHeight;
-    WIDTH = window.innerWidth;
-    windowHalfX = WIDTH / 2;
-    windowHalfY = HEIGHT / 2;
+function handleWindowResize()
+{
+    var HEIGHT = window.innerHeight;
+    var WIDTH = window.innerWidth;
+    var windowHalfX = WIDTH / 2;
+    var windowHalfY = HEIGHT / 2;
     renderer.setSize(WIDTH, HEIGHT);
     camera.aspect = WIDTH / HEIGHT;
     camera.updateProjectionMatrix();

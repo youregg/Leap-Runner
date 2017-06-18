@@ -1,15 +1,3 @@
-//COLORS
-var Colors = {
-    red:0xf25346,
-    white:0xd8d0d1,
-    brown:0x59332e,
-    brownDark:0x23190f,
-    pink:0xF5986E,
-    yellow:0xf4ce93,
-    blue:0x68c3c0,
-
-};
-
 //game basic information
 var score=0;//current score
 var distance=0;
@@ -27,10 +15,12 @@ var coinList=[];
 var container=document.getElementById('gameContainer');//get game container
 var scene=new THREE.Scene();//create game scene
 
+//create camera
 var camera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.set( 0, 50, 200 );//create perspective camera
 scene.add(camera);
 
+//create light
 var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.6);
 hemisphereLight.position.y=300;//add environmental light
 scene.add(hemisphereLight);
@@ -44,7 +34,7 @@ scene.add(centerLight);
 
 scene.fog=new THREE.Fog(0x061837, 10, 950);
 
-
+//create renderer
 var renderer=new THREE.WebGLRenderer({
     alpha: true,
     antialias: true
@@ -85,7 +75,7 @@ function playScore()
 }
 
 
-
+//add snow particles
 var textureLoader = new THREE.TextureLoader();
 map  = textureLoader.load('img/snow.png');
 material = new THREE.SpriteMaterial({map: map});
@@ -107,16 +97,16 @@ for ( i = 0; i < 60; i ++ )
 }
 
 
-// 返回一个介于min和max之间的随机数
+//return a random number between min and ax
 function getRandom(min, max)
 {
-    return Math.random() * (max - min) + min;
+    return Math.random()*(max-min)+min;
 }
 
-// 返回一个介于min和max之间的整型随机数
+//return a random integer between min and max
 function getRandomInt(min, max)
 {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(Math.random()*(max-min+1)+min);
 }
 
 function render()
@@ -149,6 +139,7 @@ var ground=function()
 
 }
 
+//create game ground
 function createGround()
 {
     gameGround= new ground();
@@ -164,7 +155,7 @@ var player=function()
     this.mesh.name = "player";
 
     var geometry=new THREE.CubeGeometry(20, 20, 20, 10, 10, 10);
-    var material=new THREE.MeshPhongMaterial({color:Colors.red});
+    var material=new THREE.MeshPhongMaterial({color:0xf25346});
     var cube=new THREE.Mesh(geometry,material);
 
     cube.castShadow=true;
@@ -175,15 +166,19 @@ var player=function()
     this.mesh.receiveShadow = true;
 }
 
+//create game player
 function createPlayer()
 {
     gamePlayer=new player();
 
     gamePlayer.mesh.position.y=gameGround.mesh.position.y+13;
 
+    //use leap motion to control player's x scale
+    //camera rotate at the same time as if the ground rotates
     leapController.loop(function(frame)
     {
-        if (frame.pointables.length > 0) {
+        if (frame.pointables.length > 0)
+        {
             var position = frame.pointables[0].stabilizedTipPosition;
             gamePlayer.mesh.position.x=position[0];
             camera.rotation.z=gamePlayer.mesh.position.x*0.0002;
@@ -195,7 +190,7 @@ function createPlayer()
 }
 createPlayer();
 
-
+//tree model
 var tree=function()
 {
     this.mesh=new THREE.Object3D();
@@ -221,6 +216,7 @@ var tree=function()
     this.mesh.add(cone);
 }
 
+//create random trees and add to collideList for collision detection later
 function createObstacles(zScale)
 {
     var myTree=new tree();
@@ -229,13 +225,39 @@ function createObstacles(zScale)
     myTree.mesh.position.z = zScale-500;
     scene.add(myTree.mesh);
     collideList.push(myTree.mesh.children[1]);
+}
+
+//coin model
+var coin=function ()
+{
+    this.mesh = new THREE.Object3D();
+    this.mesh.name="coin";
+
+    const geometry = new THREE.OctahedronGeometry(15);
+    const material = new THREE.MeshPhongMaterial({color:0xf25346});
+    var gameCoin = new THREE.Mesh(geometry, material);
+
+    gameCoin.castShadow = true;
+    gameCoin.receiveShadow = true;
+
+    this.mesh.add(gameCoin);
 
 }
 
+//create coins
+function createCoin(zscale)
+{
+    var gameCoin = new coin();
+    gameCoin.mesh.position.x = getRandom(-300, 300);
+    gameCoin.mesh.position.y =gameGround.mesh.position.y+13;
+    gameCoin.mesh.position.z = zscale-500;
+    scene.add(gameCoin.mesh);
+    coinList.push(gameCoin.mesh.children[0]);
+}
 
+//update position& score
 function update()
 {
-
     if(score>=0)
     {
         var delta = clock.getDelta();
@@ -244,13 +266,19 @@ function update()
 
         distance += moveDistance*0.01;
 
+        //movement of game player
         gamePlayer.mesh.position.z -= moveDistance * 0.8;
         centerLight.position.z=gamePlayer.mesh.position.z;
+
+        //create random trees
         if (Math.random() < 0.03)
         {
             createObstacles(gamePlayer.mesh.position.z);
         }
-        if (Math.random() < 0.01) {
+
+        //create random coins
+        if (Math.random() < 0.01)
+        {
             createCoin(gamePlayer.mesh.position.z);
         }
 
@@ -261,6 +289,7 @@ function update()
             score-=5;
             playCollide();
         }
+
         winScoreDetection();
         if(winScore==true)
         {
@@ -269,21 +298,24 @@ function update()
             playScore();
         }
 
-
+        //camera move with player
         camera.position.z = gamePlayer.mesh.position.z + 200;
 
         gameGround.mesh.position.z = gamePlayer.mesh.position.z;
+
+        //display score and moved distance
         document.getElementById('score').innerHTML = "Score: " + score.toFixed(0);
         document.getElementById('distance').innerHTML = "Distance: " + distance.toFixed(0);
     }
 
-    if(score<0)
+    if(score<0)//score decrease to 0, player dies
     {
         dead=true;
         judgeDeath();
         camera.position.set( 0, 150, 200 );
     }
 
+    //snow particles move
     for(var i = 0; i < particles.length; i++)
     {
         var particle = particles[i];
@@ -296,6 +328,7 @@ function update()
 
 render();
 
+//use raycaster for collision detection
 function crashDetection()
 {
     var originPoint=gamePlayer.mesh.position.clone();
@@ -317,6 +350,7 @@ function crashDetection()
     }
 }
 
+//use raycaster for score winning detection
 function winScoreDetection()
 {
     var originPoint=gamePlayer.mesh.position.clone();
@@ -338,51 +372,7 @@ function winScoreDetection()
     }
 }
 
-
-var coin=function ()
-{
-    this.mesh = new THREE.Object3D();
-    this.mesh.name="coin";
-
-    const geometry = new THREE.OctahedronGeometry(15);
-    const material = new THREE.MeshPhongMaterial({color: Colors.red});
-    var gameCoin = new THREE.Mesh(geometry, material);
-
-    gameCoin.castShadow = true;
-    gameCoin.receiveShadow = true;
-
-    this.mesh.add(gameCoin);
-
-}
-
-
-function createCoin(zscale)
-{
-    var gameCoin = new coin();
-    gameCoin.mesh.position.x = getRandom(-300, 300);
-    gameCoin.mesh.position.y =gameGround.mesh.position.y+13;
-    gameCoin.mesh.position.z = zscale-500;
-    scene.add(gameCoin.mesh);
-    coinList.push(gameCoin.mesh.children[0]);
-}
-
-
-function startGame()
-{
-
-
-}
-
-function pauseGame()
-{
-
-}
-
-function resumeGame()
-{
-
-}
-
+//set up death scene
 function judgeDeath()
 {
     if(dead==true)
@@ -391,25 +381,26 @@ function judgeDeath()
         Leap.loop({enableGestures: true}, function(frame)
         {
             frame.gestures.forEach(function(gesture) {
-                if (gesture.type == "swipe")
+                if (gesture.type == "swipe")//swipe to restart
                     self.location = 'game.html';
             });
         });
     }
 }
 
-
 window.addEventListener('resize', handleWindowResize, false);
 
-function handleWindowResize() {
-    HEIGHT = window.innerHeight;
-    WIDTH = window.innerWidth;
-    windowHalfX = WIDTH / 2;
-    windowHalfY = HEIGHT / 2;
+function handleWindowResize()
+{
+    var HEIGHT = window.innerHeight;
+    var WIDTH = window.innerWidth;
+    var windowHalfX = WIDTH / 2;
+    var windowHalfY = HEIGHT / 2;
     renderer.setSize(WIDTH, HEIGHT);
     camera.aspect = WIDTH / HEIGHT;
     camera.updateProjectionMatrix();
 }
+
 
 
 

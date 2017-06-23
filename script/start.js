@@ -160,6 +160,7 @@ function handleWindowResize()
     camera.updateProjectionMatrix();
 }
 
+
 //leap motion control
 Leap.loop({enableGestures:true},function(frame)
 {
@@ -168,11 +169,11 @@ Leap.loop({enableGestures:true},function(frame)
         //if gesture is a circle then start
         if (gesture.type == "circle")
         {
-            self.location = 'game.html';
+            self.location='game.html';
         }
 
         //if gesture is swipe then go to settings panel
-        if(gesture.type=="swipe")
+        if(gesture.type =="swipe")
         {
             $('#infoPanel').fadeOut(1000);
             $('#settingsPanel').fadeIn(1000);
@@ -185,8 +186,8 @@ Leap.loop({enableGestures:true},function(frame)
 
                 //Control Sound
 
-                if(position[0]<0)//selecting backgroundAudio volume
-                {
+                //if(position[0]<0)//selecting backgroundAudio volume
+                //{
                     $('#volumeTitle').css('color','darkseagreen');
                     if(position[1]<=30)
                     {
@@ -251,9 +252,9 @@ Leap.loop({enableGestures:true},function(frame)
                         $('#volume6').css('background-color','white');
                         backgroundAudio.volume = 1.;
                     }
-                }
+                //}
 
-                else if(position[0]>100)//set level
+                /*else if(position[0]>100)//set level
                 {
                     $('#levelTitle').css('color','cadetblue');
                     var pointables = frame.pointables[0];//get the first detected finger
@@ -316,7 +317,7 @@ Leap.loop({enableGestures:true},function(frame)
                         $('#level5').css('background-color', 'white');
                         $('#level6').css('background-color', 'white');
                     }
-                }
+                }*/
             }
         }
 

@@ -175,8 +175,10 @@ function createPlayer()
 
     //use leap motion to control player's x scale
     //camera rotate at the same time as if the ground rotates
+
     leapController.loop(function(frame)
     {
+
         if (frame.pointables.length > 0)
         {
             var position = frame.pointables[0].stabilizedTipPosition;
@@ -285,7 +287,6 @@ function update()
         crashDetection();
         if(crash==true)
         {
-            console.log(crash)
             score-=5;
             playCollide();
         }
@@ -293,7 +294,6 @@ function update()
         winScoreDetection();
         if(winScore==true)
         {
-            console.log("score")
             score+=20;
             playScore();
         }
@@ -382,11 +382,17 @@ function judgeDeath()
     if(dead==true)
     {
         $('#deadScene').css('display','block');
-        leapController.loop({enableGestures: true}, function(frame)
+        Leap.loop({enableGestures: true}, function(frame)
         {
+
             frame.gestures.forEach(function(gesture) {
+
                 if (gesture.type == "swipe")//swipe to restart
+                {
                     self.location = 'game.html';
+                    console.log(111);
+                }
+
             });
         });
     }
